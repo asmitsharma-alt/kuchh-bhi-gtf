@@ -1,0 +1,5467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KUCHH BHI – Guess The Frame</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #0f0f1a;
+      --bg-light: #1c1c2b;
+      --neon-pink: #ff2e92;
+      --neon-blue: #00d4ff;
+      --neon-purple: #b347ea;
+      --gold: #ffd700;
+      --white: #ffffff;
+      --gray: #b3b3b3;
+      --glass: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --danger: #ef4444;
+      --teal: #14b8a6;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-light) 100%);
+      color: var(--white);
+      overflow: hidden;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* ══ CINEMATIC INTRO ══ */
+    #cinematicIntroScreen {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #cinematicIntroScreen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, .13) 2px, rgba(0, 0, 0, .13) 4px);
+    }
+
+    #cinematicIntroScreen::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 6;
+      background: radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, .85) 100%);
+    }
+
+    .ci-particles {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .ci-particle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0;
+      animation: ciPartDrift linear infinite;
+    }
+
+    @keyframes ciPartDrift {
+      0% {
+        transform: translateY(110vh) scale(0);
+        opacity: 0
+      }
+
+      8% {
+        opacity: 1
+      }
+
+      92% {
+        opacity: .6
+      }
+
+      100% {
+        transform: translateY(-15vh) scale(1.3);
+        opacity: 0
+      }
+    }
+
+    .ci-film {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: #111;
+      border: 1px solid #222;
+      z-index: 4;
+      opacity: 0;
+      transition: opacity .5s;
+    }
+
+    .ci-film.top {
+      top: 0;
+    }
+
+    .ci-film.bot {
+      bottom: 0;
+    }
+
+    .ci-film.on {
+      opacity: 1;
+    }
+
+    .ci-film-track {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      animation: ciFilmRoll 5s linear infinite;
+    }
+
+    .ci-film.bot .ci-film-track {
+      animation-direction: reverse;
+    }
+
+    @keyframes ciFilmRoll {
+      from {
+        transform: translateX(0)
+      }
+
+      to {
+        transform: translateX(-50%)
+      }
+    }
+
+    .ci-film-hole {
+      flex-shrink: 0;
+      width: 20px;
+      height: 32px;
+      background: #000;
+      border-radius: 3px;
+      margin: 0 6px;
+      border: 1px solid #333;
+    }
+
+    .ci-film-cell {
+      flex-shrink: 0;
+      width: 58px;
+      height: 40px;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      margin: 0 2px;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border: 1px solid #2a2a3a;
+    }
+
+    .ci-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    .ci-blob.on {
+      opacity: 1;
+    }
+
+    .ci-blob1 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(255, 46, 146, .22) 0%, transparent 70%);
+      top: -100px;
+      left: -100px;
+      animation: blob1move 8s ease-in-out infinite;
+    }
+
+    .ci-blob2 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(0, 212, 255, .18) 0%, transparent 70%);
+      bottom: -80px;
+      right: -80px;
+      animation: blob2move 10s ease-in-out infinite;
+    }
+
+    .ci-blob3 {
+      width: 340px;
+      height: 340px;
+      background: radial-gradient(circle, rgba(179, 71, 234, .15) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: blob3pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes blob1move {
+
+      0%,
+      100% {
+        transform: translate(0, 0)
+      }
+
+      50% {
+        transform: translate(35px, 25px)
+      }
+    }
+
+    @keyframes blob2move {
+
+      0%,
+      100% {
+        transform: translate(0, 0)
+      }
+
+      50% {
+        transform: translate(-30px, -35px)
+      }
+    }
+
+    @keyframes blob3pulse {
+
+      0%,
+      100% {
+        transform: translate(-50%, -50%) scale(1)
+      }
+
+      50% {
+        transform: translate(-50%, -50%) scale(1.12)
+      }
+    }
+
+    .ci-countdown {
+      position: absolute;
+      z-index: 30;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .ci-count-num {
+      font-size: clamp(120px, 26vw, 220px);
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, #fff 20%, #ccc 60%, #888);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 50px rgba(255, 255, 255, .5));
+      opacity: 0;
+      transform: scale(4);
+      transition: opacity .1s, transform .35s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    .ci-count-num.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .ci-count-num.hide {
+      opacity: 0;
+      transform: scale(.1);
+      transition: opacity .18s ease-in, transform .18s ease-in;
+    }
+
+    .ci-logo-wrap {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 0;
+      width: 100%;
+      padding: 20px;
+    }
+
+    .ci-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      opacity: 0;
+    }
+
+    .ci-logo.reveal {
+      animation: ciLogoReveal .9s cubic-bezier(.34, 1.56, .64, 1) forwards;
+    }
+
+    .ci-logo.dismiss {
+      animation: ciLogoDismiss .6s cubic-bezier(.55, 0, 1, .45) forwards;
+    }
+
+    @keyframes ciLogoReveal {
+      0% {
+        opacity: 0;
+        transform: scale(.25) translateY(70px);
+        filter: blur(28px)
+      }
+
+      55% {
+        filter: blur(0)
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0)
+      }
+    }
+
+    @keyframes ciLogoDismiss {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0)
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(3);
+        filter: blur(50px)
+      }
+    }
+
+    .ci-clapper {
+      font-size: clamp(52px, 12vw, 100px);
+      filter: drop-shadow(0 0 25px rgba(255, 215, 0, .65));
+      animation: clapperDrop 1s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    @keyframes clapperDrop {
+      from {
+        transform: translateY(-80px) scale(0) rotate(-180deg)
+      }
+
+      to {
+        transform: scale(1) rotate(0deg)
+      }
+    }
+
+    .ci-title {
+      font-size: clamp(42px, 10.5vw, 108px);
+      font-weight: 900;
+      letter-spacing: 10px;
+      line-height: 1;
+      background: linear-gradient(90deg, #ffe033, #ffaa00, #ffd700, #ffcc00, #ffe033);
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: goldShimmer 2.5s linear infinite;
+      filter: drop-shadow(0 0 18px rgba(255, 215, 0, .38));
+    }
+
+    @keyframes goldShimmer {
+      0% {
+        background-position: 0% center
+      }
+
+      100% {
+        background-position: 300% center
+      }
+    }
+
+    .ci-divider {
+      height: 2px;
+      width: 0;
+      border-radius: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-blue), var(--neon-pink), var(--neon-blue), transparent);
+      transition: width .8s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .ci-divider.expand {
+      width: min(440px, 80vw);
+    }
+
+    .ci-sub {
+      font-size: clamp(13px, 3vw, 26px);
+      font-weight: 400;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+      color: var(--neon-blue);
+      overflow: hidden;
+      white-space: nowrap;
+      width: 0;
+      max-width: 100%;
+      border-right: 3px solid var(--neon-blue);
+      text-shadow: 0 0 18px rgba(0, 212, 255, .5);
+    }
+
+    .ci-sub.done {
+      border-color: transparent;
+    }
+
+    .ci-tagline {
+      font-size: clamp(11px, 1.9vw, 16px);
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .38);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+
+    .ci-tagline.on {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .ci-flare {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 15;
+      opacity: 0;
+    }
+
+    .ci-flare.outer {
+      width: clamp(260px, 64vw, 660px);
+      height: clamp(260px, 64vw, 660px);
+      border: 1.5px solid rgba(255, 215, 0, .12);
+      box-shadow: 0 0 90px 28px rgba(255, 215, 0, .06), inset 0 0 90px 28px rgba(255, 215, 0, .04);
+    }
+
+    .ci-flare.inner {
+      width: clamp(160px, 40vw, 400px);
+      height: clamp(160px, 40vw, 400px);
+      border: 1px solid rgba(0, 212, 255, .12);
+      box-shadow: 0 0 55px 14px rgba(0, 212, 255, .05);
+    }
+
+    .ci-flare.outer.pulse {
+      animation: outerFlarePulse 1.2s ease-out forwards;
+    }
+
+    .ci-flare.inner.spin {
+      animation: innerFlareSpin 2s ease-out forwards;
+    }
+
+    @keyframes outerFlarePulse {
+      0% {
+        opacity: 0;
+        transform: scale(.22)
+      }
+
+      45% {
+        opacity: 1;
+        transform: scale(1.04)
+      }
+
+      72% {
+        opacity: .85;
+        transform: scale(.97)
+      }
+
+      100% {
+        opacity: .5;
+        transform: scale(1)
+      }
+    }
+
+    @keyframes innerFlareSpin {
+      0% {
+        opacity: 0;
+        transform: rotate(0deg) scale(.2)
+      }
+
+      40% {
+        opacity: .75
+      }
+
+      100% {
+        opacity: .28;
+        transform: rotate(180deg) scale(1)
+      }
+    }
+
+    .ci-progress {
+      position: absolute;
+      bottom: 62px;
+      left: 8%;
+      right: 8%;
+      height: 3px;
+      background: rgba(255, 255, 255, .07);
+      border-radius: 2px;
+      overflow: hidden;
+      opacity: 0;
+      z-index: 20;
+      transition: opacity .4s;
+    }
+
+    .ci-progress.on {
+      opacity: 1;
+    }
+
+    .ci-progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--neon-pink), var(--gold), var(--neon-blue), var(--gold), var(--neon-pink));
+      background-size: 300% auto;
+      animation: goldShimmer 1.8s linear infinite;
+      transition: width linear;
+    }
+
+    .ci-skip {
+      position: absolute;
+      bottom: 18px;
+      right: 22px;
+      z-index: 25;
+      font-size: 11px;
+      color: rgba(255, 255, 255, .28);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity .5s;
+    }
+
+    .ci-skip.on {
+      opacity: 1;
+    }
+
+    .ci-skip:hover {
+      color: rgba(255, 255, 255, .55);
+    }
+
+    .screen-flash {
+      position: fixed;
+      inset: 0;
+      background: #fff;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .screen-flash.go {
+      animation: flashOut .4s ease-out forwards;
+    }
+
+    @keyframes flashOut {
+      0% {
+        opacity: .95
+      }
+
+      100% {
+        opacity: 0
+      }
+    }
+
+    /* ══ HOME ══ */
+    #homeScreen {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      background: radial-gradient(ellipse at center, rgba(255, 46, 146, .1) 0%, transparent 70%), linear-gradient(135deg, var(--bg-dark), var(--bg-light));
+    }
+
+    .hero {
+      text-align: center;
+      animation: heroFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes heroFloat {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-10px)
+      }
+    }
+
+    .hero .emoji {
+      font-size: clamp(38px, 8vw, 76px);
+      display: block;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 0 18px rgba(255, 215, 0, .5));
+    }
+
+    .hero h1 {
+      font-size: clamp(34px, 8vw, 68px);
+      font-weight: 900;
+      background: linear-gradient(90deg, var(--gold), #ffaa00, var(--gold));
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: goldShimmer 3s linear infinite;
+      letter-spacing: 4px;
+    }
+
+    .hero p {
+      font-size: clamp(15px, 2.8vw, 26px);
+      font-weight: 300;
+      color: var(--gray);
+      margin-top: 8px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .btn-primary {
+      padding: 16px 56px;
+      font-size: clamp(15px, 2.4vw, 21px);
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, var(--neon-pink), #ff6b6b);
+      color: #fff;
+      cursor: pointer;
+      transition: all .3s;
+      box-shadow: 0 10px 38px rgba(255, 46, 146, .38);
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 14px 48px rgba(255, 46, 146, .58);
+    }
+
+    .btn-secondary {
+      padding: 11px 28px;
+      font-size: clamp(12px, 1.7vw, 15px);
+      font-weight: 500;
+      font-family: inherit;
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      color: var(--gray);
+      cursor: pointer;
+      transition: all .3s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+
+    .btn-outline {
+      padding: 11px 28px;
+      font-size: clamp(12px, 1.7vw, 15px);
+      font-weight: 500;
+      font-family: inherit;
+      border: 1px solid rgba(0, 212, 255, .4);
+      border-radius: 28px;
+      background: rgba(0, 212, 255, .05);
+      color: var(--neon-blue);
+      cursor: pointer;
+      transition: all .3s;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--neon-blue);
+      background: rgba(0, 212, 255, .12);
+      transform: scale(1.03);
+    }
+
+    /* ══ HOW TO PLAY ══ */
+    #howToPlayScreen {
+      flex-direction: column;
+      align-items: center;
+      background: radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, .08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(179, 71, 234, .08) 0%, transparent 50%), linear-gradient(135deg, var(--bg-dark), var(--bg-light));
+      overflow-y: auto;
+      padding: 36px 22px;
+    }
+
+    .htp-wrap {
+      width: 100%;
+      max-width: 840px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .htp-head {
+      text-align: center;
+    }
+
+    .htp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 16px;
+      background: rgba(0, 212, 255, .1);
+      border: 1px solid rgba(0, 212, 255, .3);
+      border-radius: 28px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--neon-blue);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .htp-head h1 {
+      font-size: clamp(26px, 5vw, 46px);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .htp-head p {
+      font-size: clamp(12px, 1.9vw, 15px);
+      color: var(--gray);
+      max-width: 540px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .htp-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+    }
+
+    .htp-step {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 22px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .24s, border-color .24s;
+      animation: stepIn .5s ease both;
+    }
+
+    .htp-step:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, .2);
+    }
+
+    @keyframes stepIn {
+      from {
+        opacity: 0;
+        transform: translateY(18px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .htp-step:nth-child(1) {
+      animation-delay: .05s
+    }
+
+    .htp-step:nth-child(2) {
+      animation-delay: .11s
+    }
+
+    .htp-step:nth-child(3) {
+      animation-delay: .17s
+    }
+
+    .htp-step:nth-child(4) {
+      animation-delay: .23s
+    }
+
+    .htp-step:nth-child(5) {
+      animation-delay: .29s
+    }
+
+    .htp-step:nth-child(6) {
+      animation-delay: .35s
+    }
+
+    .htp-step::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--sg, transparent);
+      opacity: .06;
+      pointer-events: none;
+    }
+
+    .htp-step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .htp-step-icon {
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .htp-step h3 {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .htp-step p {
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.65;
+    }
+
+    .htp-step.pink {
+      --sg: var(--neon-pink);
+      border-color: rgba(255, 46, 146, .2);
+    }
+
+    .htp-step.blue {
+      --sg: var(--neon-blue);
+      border-color: rgba(0, 212, 255, .2);
+    }
+
+    .htp-step.purple {
+      --sg: var(--neon-purple);
+      border-color: rgba(179, 71, 234, .2);
+    }
+
+    .htp-step.gold {
+      --sg: var(--gold);
+      border-color: rgba(255, 215, 0, .2);
+    }
+
+    .htp-step.green {
+      --sg: var(--success);
+      border-color: rgba(74, 222, 128, .2);
+    }
+
+    .htp-step.teal {
+      --sg: var(--teal);
+      border-color: rgba(20, 184, 166, .2);
+    }
+
+    .htp-step.pink .htp-step-num {
+      background: rgba(255, 46, 146, .2);
+      color: var(--neon-pink);
+    }
+
+    .htp-step.blue .htp-step-num {
+      background: rgba(0, 212, 255, .2);
+      color: var(--neon-blue);
+    }
+
+    .htp-step.purple .htp-step-num {
+      background: rgba(179, 71, 234, .2);
+      color: var(--neon-purple);
+    }
+
+    .htp-step.gold .htp-step-num {
+      background: rgba(255, 215, 0, .2);
+      color: var(--gold);
+    }
+
+    .htp-step.green .htp-step-num {
+      background: rgba(74, 222, 128, .2);
+      color: var(--success);
+    }
+
+    .htp-step.teal .htp-step-num {
+      background: rgba(20, 184, 166, .2);
+      color: var(--teal);
+    }
+
+    .htp-pts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 11px;
+    }
+
+    .htp-pts-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 15px;
+      padding: 16px;
+      text-align: center;
+      animation: stepIn .5s ease both;
+    }
+
+    .htp-pts-card:nth-child(1) {
+      animation-delay: .38s
+    }
+
+    .htp-pts-card:nth-child(2) {
+      animation-delay: .48s
+    }
+
+    .htp-pts-card:nth-child(3) {
+      animation-delay: .58s
+    }
+
+    .htp-pts-card .pi {
+      font-size: 26px;
+      margin-bottom: 7px;
+    }
+
+    .htp-pts-card .pv {
+      font-size: clamp(20px, 3.8vw, 30px);
+      font-weight: 900;
+      margin-bottom: 3px;
+    }
+
+    .htp-pts-card .pl {
+      font-size: 11px;
+      color: var(--gray);
+    }
+
+    .htp-pts-card.correct {
+      border-color: rgba(74, 222, 128, .3);
+    }
+
+    .htp-pts-card.correct .pv {
+      color: var(--success);
+    }
+
+    .htp-pts-card.judge {
+      border-color: rgba(255, 215, 0, .3);
+    }
+
+    .htp-pts-card.judge .pv {
+      color: var(--gold);
+    }
+
+    .htp-pts-card.skip {
+      border-color: rgba(239, 68, 68, .3);
+    }
+
+    .htp-pts-card.skip .pv {
+      color: var(--danger);
+    }
+
+    .htp-tips {
+      background: linear-gradient(135deg, rgba(179, 71, 234, .09), rgba(0, 212, 255, .06));
+      border: 1px solid rgba(179, 71, 234, .24);
+      border-radius: 18px;
+      padding: 18px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 22px;
+      animation: stepIn .5s .48s ease both;
+    }
+
+    .htp-tips-title {
+      width: 100%;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--neon-purple);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 2px;
+    }
+
+    .htp-tip {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--gray);
+      min-width: 195px;
+      flex: 1;
+    }
+
+    .htp-tip .ti {
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .htp-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 6px;
+      animation: stepIn .5s .58s ease both;
+    }
+
+    .htp-cta .btn-start {
+      padding: 16px 68px;
+      font-size: clamp(15px, 2.4vw, 21px);
+      font-weight: 700;
+      font-family: inherit;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, var(--neon-pink), #ff6b6b);
+      color: #fff;
+      cursor: pointer;
+      transition: all .3s;
+      box-shadow: 0 10px 38px rgba(255, 46, 146, .38);
+      letter-spacing: 1px;
+    }
+
+    .htp-cta .btn-start:hover {
+      transform: scale(1.05);
+      box-shadow: 0 14px 48px rgba(255, 46, 146, .62);
+    }
+
+    .htp-cta .back-lnk {
+      background: none;
+      border: none;
+      color: var(--gray);
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      transition: color .2s;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .htp-cta .back-lnk:hover {
+      color: var(--white);
+    }
+
+    .htp-sec-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gray);
+      margin-bottom: -8px;
+    }
+
+    /* ══ MODAL ══ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .8);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, rgba(30, 30, 50, .96), rgba(20, 20, 35, .96));
+      border: 1px solid var(--glass-border);
+      border-radius: 22px;
+      padding: 28px;
+      max-width: 1100px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .modal-header h2 {
+      font-size: clamp(19px, 2.8vw, 26px);
+      font-weight: 700;
+    }
+
+    .close-btn {
+      width: 38px;
+      height: 38px;
+      border: none;
+      border-radius: 50%;
+      background: var(--glass);
+      color: var(--gray);
+      font-size: 22px;
+      cursor: pointer;
+      transition: all .3s;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 46, 146, .2);
+      color: var(--neon-pink);
+    }
+
+    .admin-tabs {
+      display: flex;
+      gap: 9px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .admin-tab {
+      padding: 11px 22px;
+      font-size: 13px;
+      font-family: inherit;
+      font-weight: 500;
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      background: var(--glass);
+      color: var(--gray);
+      cursor: pointer;
+      transition: all .3s;
+    }
+
+    .admin-tab.active {
+      background: linear-gradient(135deg, var(--neon-pink), #ff6b6b);
+      border-color: var(--neon-pink);
+      color: #fff;
+    }
+
+    .admin-tab .lock-icon {
+      margin-left: 5px;
+      font-size: 11px;
+    }
+
+    /* Password Lock Overlay */
+    .pw-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, .85);
+      backdrop-filter: blur(14px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      border-radius: 22px;
+    }
+
+    .pw-overlay.active {
+      display: flex;
+    }
+
+    .pw-box {
+      background: linear-gradient(135deg, rgba(30, 30, 55, .98), rgba(20, 20, 40, .98));
+      border: 1px solid rgba(255, 46, 146, .3);
+      border-radius: 20px;
+      padding: 36px 32px;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      animation: pwFadeIn .35s ease;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+    }
+
+    @keyframes pwFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(.85) translateY(20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .pw-box .pw-icon {
+      font-size: 48px;
+      margin-bottom: 14px;
+      filter: drop-shadow(0 0 20px rgba(255, 46, 146, .5));
+    }
+
+    .pw-box h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--neon-pink);
+      margin-bottom: 6px;
+    }
+
+    .pw-box p {
+      font-size: 12px;
+      color: var(--gray);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .pw-input-wrap {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .pw-input-wrap input {
+      width: 100%;
+      padding: 13px 44px 13px 16px;
+      font-size: 14px;
+      font-family: inherit;
+      border: 2px solid var(--glass-border);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, .4);
+      color: var(--white);
+      letter-spacing: 2px;
+      transition: border-color .3s;
+    }
+
+    .pw-input-wrap input:focus {
+      outline: none;
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 20px rgba(255, 46, 146, .2);
+    }
+
+    .pw-input-wrap input.pw-error {
+      border-color: var(--danger);
+      animation: pwShake .4s ease;
+    }
+
+    @keyframes pwShake {
+
+      0%,
+      100% {
+        transform: translateX(0)
+      }
+
+      20% {
+        transform: translateX(-8px)
+      }
+
+      40% {
+        transform: translateX(8px)
+      }
+
+      60% {
+        transform: translateX(-5px)
+      }
+
+      80% {
+        transform: translateX(5px)
+      }
+    }
+
+    .pw-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--gray);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .pw-submit {
+      width: 100%;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--neon-pink), #ff6b6b);
+      color: #fff;
+      cursor: pointer;
+      transition: all .3s;
+      box-shadow: 0 8px 28px rgba(255, 46, 146, .35);
+    }
+
+    .pw-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 36px rgba(255, 46, 146, .5);
+    }
+
+    .pw-error-msg {
+      font-size: 11px;
+      color: var(--danger);
+      margin-top: 8px;
+      min-height: 16px;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .pw-error-msg.visible {
+      opacity: 1;
+    }
+
+    .pw-cancel {
+      background: none;
+      border: none;
+      color: var(--gray);
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 12px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: color .2s;
+    }
+
+    .pw-cancel:hover {
+      color: var(--white);
+    }
+
+    .admin-tab-content {
+      display: none;
+    }
+
+    .admin-tab-content.active {
+      display: block;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 22px;
+    }
+
+    .admin-section {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 15px;
+      padding: 18px;
+    }
+
+    .admin-section.full-width {
+      grid-column: 1/-1;
+    }
+
+    .admin-section h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: var(--gold);
+    }
+
+    .input-group {
+      margin-bottom: 12px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 11px;
+      color: var(--gray);
+      margin-bottom: 5px;
+    }
+
+    .input-group input,
+    .input-group textarea,
+    .input-group select {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-family: inherit;
+      border: 1px solid var(--glass-border);
+      border-radius: 9px;
+      background: rgba(0, 0, 0, .3);
+      color: var(--white);
+      transition: all .3s;
+    }
+
+    .input-group input:focus,
+    .input-group textarea:focus {
+      outline: none;
+      border-color: var(--neon-pink);
+    }
+
+    .input-group textarea {
+      resize: vertical;
+      min-height: 75px;
+    }
+
+    .section-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section-card {
+      background: rgba(0, 0, 0, .3);
+      border: 1px solid var(--glass-border);
+      border-radius: 15px;
+      overflow: hidden;
+    }
+
+    .section-card.collapsed .section-content {
+      display: none;
+    }
+
+    .section-card-header {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 14px 18px;
+      background: linear-gradient(135deg, rgba(179, 71, 234, .2), rgba(0, 212, 255, .1));
+      border-bottom: 1px solid var(--glass-border);
+      cursor: pointer;
+    }
+
+    .section-icon-select {
+      font-size: 18px;
+      padding: 3px;
+      border: 1px solid var(--glass-border);
+      border-radius: 7px;
+      background: rgba(0, 0, 0, .3);
+      color: var(--white);
+      cursor: pointer;
+    }
+
+    .section-card-header input[type=text] {
+      flex: 1;
+      padding: 7px 11px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--white);
+    }
+
+    .section-card-header input[type=text]:focus {
+      outline: none;
+      border-color: var(--neon-purple);
+      background: rgba(0, 0, 0, .3);
+    }
+
+    .section-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-meta .rc {
+      font-size: 11px;
+      color: var(--gray);
+      background: var(--glass);
+      padding: 3px 9px;
+      border-radius: 11px;
+    }
+
+    .section-meta button {
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 7px;
+      background: var(--glass);
+      color: var(--gray);
+      cursor: pointer;
+      transition: all .2s;
+      font-size: 15px;
+    }
+
+    .section-meta button:hover {
+      background: rgba(255, 46, 146, .2);
+      color: var(--neon-pink);
+    }
+
+    .section-content {
+      padding: 18px;
+    }
+
+    .frame-list {
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    .frame-item {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      padding: 13px;
+      background: rgba(0, 0, 0, .2);
+      border-radius: 11px;
+      margin-bottom: 10px;
+      border: 1px solid var(--glass-border);
+    }
+
+    .frame-item-hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .frame-item-hdr .fn {
+      font-size: 11px;
+      color: var(--neon-blue);
+      font-weight: 600;
+    }
+
+    .frame-item-hdr button {
+      width: 26px;
+      height: 26px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(255, 46, 146, .2);
+      color: var(--neon-pink);
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .frame-item-row {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+    }
+
+    .frame-item-row label {
+      font-size: 10px;
+      color: var(--gray);
+      min-width: 48px;
+    }
+
+    .frame-item-row input,
+    .frame-item-row select {
+      flex: 1;
+      padding: 9px 11px;
+      font-size: 12px;
+      font-family: inherit;
+      border: 1px solid var(--glass-border);
+      border-radius: 7px;
+      background: rgba(0, 0, 0, .3);
+      color: var(--white);
+    }
+
+    .frame-item-row select option {
+      background: var(--bg-dark);
+    }
+
+    .add-frame-btn,
+    .add-section-btn,
+    .add-player-btn {
+      width: 100%;
+      padding: 11px;
+      border: 2px dashed var(--glass-border);
+      border-radius: 9px;
+      background: transparent;
+      color: var(--gray);
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all .3s;
+    }
+
+    .add-frame-btn:hover {
+      border-color: var(--neon-blue);
+      color: var(--neon-blue);
+    }
+
+    .add-section-btn {
+      margin-top: 18px;
+      border-color: var(--neon-purple);
+      color: var(--neon-purple);
+      font-weight: 600;
+    }
+
+    .add-section-btn:hover {
+      background: rgba(179, 71, 234, .1);
+    }
+
+    .add-player-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .player-list {
+      max-height: 230px;
+      overflow-y: auto;
+    }
+
+    .player-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 7px;
+    }
+
+    .player-item input {
+      flex: 1;
+      padding: 9px 13px;
+      font-size: 12px;
+      font-family: inherit;
+      border: 1px solid var(--glass-border);
+      border-radius: 7px;
+      background: rgba(0, 0, 0, .3);
+      color: var(--white);
+    }
+
+    .player-item button {
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 7px;
+      background: rgba(255, 46, 146, .2);
+      color: var(--neon-pink);
+      cursor: pointer;
+    }
+
+    .judge-info-panel {
+      background: linear-gradient(135deg, rgba(255, 215, 0, .09), rgba(255, 170, 0, .05));
+      border: 1px solid rgba(255, 215, 0, .2);
+      border-radius: 11px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .judge-info-panel h4 {
+      font-size: 13px;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    .judge-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .judge-stat {
+      background: rgba(0, 0, 0, .2);
+      padding: 9px 13px;
+      border-radius: 7px;
+    }
+
+    .judge-stat .label {
+      font-size: 10px;
+      color: var(--gray);
+      margin-bottom: 3px;
+    }
+
+    .judge-stat .value {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    /* ══ GAME ══ */
+    #gameScreen {
+      flex-direction: column;
+      background: var(--bg-dark);
+      overflow: hidden;
+    }
+
+    .game-header {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 22px;
+      background: var(--glass);
+      border-bottom: 1px solid var(--glass-border);
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .game-header .logo {
+      font-size: clamp(12px, 1.7vw, 16px);
+      font-weight: 700;
+    }
+
+    .game-progress {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      flex-wrap: wrap;
+    }
+
+    .sec-badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 11px;
+      background: linear-gradient(135deg, rgba(179, 71, 234, .3), rgba(0, 212, 255, .2));
+      border: 1px solid rgba(179, 71, 234, .5);
+      border-radius: 18px;
+      font-size: clamp(10px, 1.3vw, 12px);
+      font-weight: 600;
+      color: var(--neon-purple);
+    }
+
+    .round-info {
+      font-size: clamp(10px, 1.5vw, 14px);
+      font-weight: 500;
+      color: var(--gold);
+    }
+
+    .judge-badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 11px;
+      background: linear-gradient(135deg, rgba(255, 215, 0, .2), rgba(255, 170, 0, .1));
+      border: 1px solid rgba(255, 215, 0, .3);
+      border-radius: 18px;
+      font-size: clamp(10px, 1.3vw, 12px);
+      transition: all .3s;
+    }
+
+    .judge-badge.jp {
+      background: linear-gradient(135deg, rgba(255, 215, 0, .4), rgba(255, 170, 0, .3));
+      border-color: var(--gold);
+      box-shadow: 0 0 18px rgba(255, 215, 0, .28);
+      animation: jGlow 1s ease-in-out infinite;
+    }
+
+    @keyframes jGlow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 18px rgba(255, 215, 0, .18)
+      }
+
+      50% {
+        box-shadow: 0 0 36px rgba(255, 215, 0, .55)
+      }
+    }
+
+    .judge-badge .jname {
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    .judge-badge .jrounds {
+      font-size: 9px;
+      color: var(--gray);
+      background: rgba(0, 0, 0, .3);
+      padding: 2px 7px;
+      border-radius: 9px;
+    }
+
+    .game-main {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .frame-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .state-ind {
+      position: absolute;
+      top: 11px;
+      left: 11px;
+      z-index: 5;
+      padding: 4px 11px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      pointer-events: none;
+    }
+
+    .state-ind.round-active {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .state-ind.judge-phase {
+      border-color: var(--gold);
+      color: var(--gold);
+      animation: statePulse .5s ease-in-out infinite;
+    }
+
+    .state-ind.answer-reveal {
+      border-color: var(--neon-pink);
+      color: var(--neon-pink);
+    }
+
+    .state-ind.scoring-phase {
+      border-color: var(--neon-blue);
+      color: var(--neon-blue);
+      box-shadow: 0 0 18px rgba(0, 212, 255, .28);
+    }
+
+    .state-ind.round-transition {
+      border-color: var(--gray);
+      color: var(--gray);
+    }
+
+    @keyframes statePulse {
+
+      0%,
+      100% {
+        transform: scale(1)
+      }
+
+      50% {
+        transform: scale(1.05)
+      }
+    }
+
+    /* ══ FRAME DISPLAY ══ */
+    .frame-display {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .frame-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: filter .5s ease, opacity .4s ease;
+    }
+
+    .frame-layer.blurred {
+      filter: blur(28px) brightness(.4);
+    }
+
+    .frame-layer img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .frame-layer .frame-emoji-big {
+      font-size: clamp(75px, 18vw, 190px);
+      filter: none;
+    }
+
+    .frame-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      transition: opacity .4s ease;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .frame-placeholder.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .frame-placeholder .emoji {
+      font-size: clamp(38px, 9vw, 90px);
+    }
+
+    .frame-placeholder h2 {
+      font-size: clamp(18px, 3.8vw, 34px);
+      background: linear-gradient(90deg, var(--gold), #ffaa00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Dialogue specific styles */
+    .frame-dialogue {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      z-index: 1;
+      opacity: 0;
+      transition: none;
+    }
+
+    .frame-dialogue.visible {
+      opacity: 1;
+    }
+
+    .dialogue-content {
+      max-width: 900px;
+      text-align: center;
+    }
+
+    .dialogue-quote {
+      font-size: clamp(24px, 5vw, 56px);
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--white);
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    .dialogue-quote::before {
+      content: '"';
+      color: var(--neon-blue);
+      font-size: 1.2em;
+    }
+
+    .dialogue-quote::after {
+      content: '"';
+      color: var(--neon-blue);
+      font-size: 1.2em;
+    }
+
+    .dialogue-context {
+      font-size: clamp(13px, 2vw, 18px);
+      color: var(--gray);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* Image transition overlay for smooth loading */
+    .frame-image-container {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    .frame-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transition: opacity .4s ease;
+      position: absolute;
+    }
+
+    .frame-image.loaded {
+      opacity: 1;
+    }
+
+    .answer-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      background: rgba(0, 0, 0, .88);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .45s ease;
+      z-index: 10;
+    }
+
+    .answer-overlay.visible {
+      opacity: 1;
+    }
+
+    .answer-overlay .ans-year {
+      font-size: clamp(13px, 2.2vw, 20px);
+      color: var(--gray);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      animation: ansSlideUp .5s .1s ease both;
+    }
+
+    .answer-overlay .ans-title {
+      font-size: clamp(32px, 7vw, 88px);
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.05;
+      padding: 0 24px;
+      background: linear-gradient(90deg, var(--gold), #ffaa00, var(--gold));
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: goldShimmer 2.5s linear infinite, ansSlideUp .5s ease both;
+      filter: drop-shadow(0 0 30px rgba(255, 215, 0, .45));
+    }
+
+    .answer-overlay .ans-divider {
+      width: 0;
+      height: 3px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-pink), var(--gold), var(--neon-blue), transparent);
+      animation: ansRevealLine .6s .15s ease forwards;
+    }
+
+    .answer-overlay .ans-dialogue {
+      font-size: clamp(14px, 2vw, 18px);
+      color: var(--neon-blue);
+      max-width: 700px;
+      text-align: center;
+      line-height: 1.6;
+      margin-top: 18px;
+      padding: 18px 24px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      font-style: italic;
+      animation: ansSlideUp .5s .2s ease both;
+    }
+
+    @keyframes ansRevealLine {
+      from {
+        width: 0
+      }
+
+      to {
+        width: min(500px, 80vw)
+      }
+    }
+
+    @keyframes ansSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .ctrl-panel {
+      flex-shrink: 0;
+      width: 270px;
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      border-left: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-sec {
+      padding: 14px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .panel-sec:last-child {
+      border-bottom: none;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .panel-sec h3 {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 11px;
+    }
+
+    .timer-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 9px;
+      padding: 12px 0 5px;
+    }
+
+    .timer-circle {
+      width: 68px;
+      height: 68px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .timer-circle svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+
+    .timer-circle .tbg {
+      fill: none;
+      stroke: rgba(255, 255, 255, .1);
+      stroke-width: 7;
+    }
+
+    .timer-circle .tpg {
+      fill: none;
+      stroke: var(--success);
+      stroke-width: 7;
+      stroke-linecap: round;
+      transition: stroke-dashoffset .1s linear, stroke .3s;
+    }
+
+    .timer-circle .ttx {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .t-pulse {
+      animation: tPulse .5s ease-in-out infinite;
+    }
+
+    @keyframes tPulse {
+
+      0%,
+      100% {
+        transform: scale(1)
+      }
+
+      50% {
+        transform: scale(1.06)
+      }
+    }
+
+    .timer-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+      transition: all .3s;
+    }
+
+    .timer-label.jp {
+      color: var(--gold);
+      animation: statePulse .5s ease-in-out infinite;
+    }
+
+    .timer-label.sp {
+      color: var(--neon-blue);
+    }
+
+    .leaderboard {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .lb-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 13px;
+      background: rgba(0, 0, 0, .2);
+      border-radius: 9px;
+      transition: all .3s;
+    }
+
+    .lb-item.top {
+      background: linear-gradient(135deg, rgba(255, 215, 0, .2), rgba(255, 170, 0, .1));
+      border: 1px solid rgba(255, 215, 0, .3);
+    }
+
+    .lb-item.is-j {
+      border-left: 3px solid var(--gold);
+    }
+
+    .lb-item.j-act {
+      background: linear-gradient(135deg, rgba(255, 215, 0, .3), rgba(255, 170, 0, .2));
+      border: 1px solid var(--gold);
+      animation: jHL 1s ease-in-out infinite;
+    }
+
+    @keyframes jHL {
+
+      0%,
+      100% {
+        box-shadow: 0 0 9px rgba(255, 215, 0, .18)
+      }
+
+      50% {
+        box-shadow: 0 0 22px rgba(255, 215, 0, .38)
+      }
+    }
+
+    .lb-item .rank {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 50%;
+      background: var(--glass);
+      margin-right: 7px;
+    }
+
+    .lb-item.top .rank {
+      background: var(--gold);
+      color: var(--bg-dark);
+    }
+
+    .lb-item .name {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .lb-item .score {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold);
+      position: relative;
+    }
+
+    .score-pop {
+      position: absolute;
+      top: -18px;
+      right: 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--success);
+      animation: spPop 1s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes spPop {
+      0% {
+        opacity: 1;
+        transform: translateY(0)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-18px)
+      }
+    }
+
+    .nonk-panel {
+      background: linear-gradient(135deg, rgba(239, 68, 68, .09), rgba(239, 68, 68, .04));
+      border: 1px solid rgba(239, 68, 68, .28);
+      border-radius: 11px;
+      padding: 13px;
+      margin-bottom: 11px;
+      display: none;
+    }
+
+    .nonk-panel.on {
+      display: block;
+      animation: fadeUp .3s ease;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(-9px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .nonk-btn {
+      width: 100%;
+      padding: 11px;
+      border: 2px dashed rgba(239, 68, 68, .38);
+      border-radius: 9px;
+      background: transparent;
+      color: var(--danger);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .nonk-btn:hover:not(:disabled) {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, .1);
+      transform: scale(1.02);
+    }
+
+    .nonk-btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+
+    .skip-msg {
+      text-align: center;
+      padding: 7px;
+      color: var(--gray);
+      font-size: 11px;
+      font-style: italic;
+      margin-top: 7px;
+      display: none;
+    }
+
+    .skip-msg.on {
+      display: block;
+      animation: fadeUp .3s ease;
+    }
+
+    .scoring-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 15, 26, .95);
+      backdrop-filter: blur(8px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      padding: 28px;
+      z-index: 20;
+    }
+
+    .scoring-overlay.on {
+      display: flex;
+      animation: sfadeIn .4s ease;
+    }
+
+    @keyframes sfadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .scoring-title {
+      font-size: clamp(17px, 3.3vw, 24px);
+      color: var(--neon-blue);
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .scoring-sub {
+      font-size: clamp(12px, 1.9vw, 15px);
+      color: var(--gray);
+      text-align: center;
+    }
+
+    .scoring-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      max-width: 680px;
+    }
+
+    .spbtn {
+      width: clamp(115px, 21vw, 170px);
+      padding: 18px 24px;
+      border: 2px solid var(--glass-border);
+      border-radius: 15px;
+      background: var(--glass);
+      color: var(--white);
+      font-family: inherit;
+      font-size: clamp(13px, 2.3vw, 19px);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .spbtn:hover:not(:disabled) {
+      transform: scale(1.08);
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 28px rgba(0, 212, 255, .38);
+      background: rgba(0, 212, 255, .1);
+    }
+
+    .spbtn.is-j {
+      background: linear-gradient(135deg, rgba(255, 215, 0, .14), rgba(255, 170, 0, .09));
+      border-color: rgba(255, 215, 0, .38);
+    }
+
+    .spbtn.is-j:hover:not(:disabled) {
+      border-color: var(--gold);
+      box-shadow: 0 0 28px rgba(255, 215, 0, .48);
+    }
+
+    .spbtn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      transform: scale(.95);
+    }
+
+    .spbtn.sel {
+      animation: selPulse .6s ease;
+      pointer-events: none;
+    }
+
+    @keyframes selPulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 18px var(--success)
+      }
+
+      50% {
+        transform: scale(1.14);
+        box-shadow: 0 0 46px var(--success)
+      }
+
+      100% {
+        transform: scale(1.04);
+        opacity: .6
+      }
+    }
+
+    .spbtn .ptsl {
+      font-size: 10px;
+      color: var(--gray);
+      font-weight: 400;
+    }
+
+    .spbtn.is-j .ptsl {
+      color: var(--gold);
+    }
+
+    .locked-ind {
+      display: none;
+      align-items: center;
+      gap: 9px;
+      padding: 13px 26px;
+      background: rgba(74, 222, 128, .14);
+      border: 1px solid var(--success);
+      border-radius: 28px;
+      color: var(--success);
+      font-weight: 600;
+      font-size: 14px;
+      animation: lkPulse 1s ease infinite;
+    }
+
+    .locked-ind.on {
+      display: flex;
+    }
+
+    .skipped-ind {
+      display: none;
+      align-items: center;
+      gap: 9px;
+      padding: 13px 26px;
+      background: rgba(239, 68, 68, .14);
+      border: 1px solid var(--danger);
+      border-radius: 28px;
+      color: var(--danger);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .skipped-ind.on {
+      display: flex;
+      animation: fadeUp .4s ease;
+    }
+
+    @keyframes lkPulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .55
+      }
+    }
+
+    .skip-btn {
+      position: absolute;
+      bottom: 11px;
+      right: 11px;
+      padding: 7px 16px;
+      font-size: 12px;
+      font-family: inherit;
+      font-weight: 500;
+      border: 1px solid var(--glass-border);
+      border-radius: 22px;
+      background: var(--glass);
+      color: var(--gray);
+      cursor: pointer;
+      transition: all .3s;
+      z-index: 10;
+    }
+
+    .skip-btn:hover {
+      border-color: var(--neon-pink);
+      color: var(--neon-pink);
+    }
+
+    .skip-btn:disabled {
+      opacity: .3;
+      cursor: not-allowed;
+    }
+
+    .sec-intro-ov,
+    .round-intro-ov,
+    .judge-ov {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 700;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .sec-intro-ov.on,
+    .round-intro-ov.on,
+    .judge-ov.on {
+      display: flex;
+    }
+
+    .sec-intro-ov {
+      background: radial-gradient(ellipse at center, rgba(179, 71, 234, .2) 0%, transparent 50%), rgba(0, 0, 0, .97);
+      z-index: 750;
+    }
+
+    .sio-content {
+      text-align: center;
+      animation: sioFade .6s ease;
+    }
+
+    @keyframes sioFade {
+      from {
+        opacity: 0;
+        transform: scale(.8) translateY(28px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .sio-icon {
+      font-size: clamp(55px, 14vw, 95px);
+      margin-bottom: 18px;
+      animation: iconBounce 1s ease infinite;
+    }
+
+    @keyframes iconBounce {
+
+      0%,
+      100% {
+        transform: translateY(0) scale(1)
+      }
+
+      50% {
+        transform: translateY(-14px) scale(1.1)
+      }
+    }
+
+    .sio-lbl {
+      font-size: clamp(13px, 2.8vw, 19px);
+      font-weight: 300;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 8px;
+      margin-bottom: 9px;
+    }
+
+    .sio-name {
+      font-size: clamp(34px, 9.5vw, 76px);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue), var(--neon-pink));
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gFlow 3s ease infinite;
+    }
+
+    @keyframes gFlow {
+
+      0%,
+      100% {
+        background-position: 0% 50%
+      }
+
+      50% {
+        background-position: 100% 50%
+      }
+    }
+
+    .sio-meta {
+      margin-top: 18px;
+      font-size: clamp(13px, 2.3vw, 17px);
+      color: var(--gray);
+    }
+
+    .sio-meta span {
+      color: var(--neon-blue);
+      font-weight: 600;
+    }
+
+    .sio-dots {
+      display: flex;
+      gap: 7px;
+      margin-top: 28px;
+      justify-content: center;
+    }
+
+    .sio-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--glass-border);
+      transition: all .3s;
+    }
+
+    .sio-dot.a {
+      background: var(--neon-purple);
+      box-shadow: 0 0 13px var(--neon-purple);
+    }
+
+    .sio-dot.c {
+      background: var(--gold);
+    }
+
+    .round-intro-ov {
+      background: radial-gradient(ellipse at center, rgba(255, 46, 146, .14) 0%, transparent 50%), rgba(0, 0, 0, .96);
+    }
+
+    .rio-content {
+      text-align: center;
+      animation: rioFade .5s ease;
+    }
+
+    @keyframes rioFade {
+      from {
+        opacity: 0;
+        transform: scale(.8)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1)
+      }
+    }
+
+    .rio-lbl {
+      font-size: clamp(17px, 3.8vw, 26px);
+      font-weight: 300;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 8px;
+      margin-bottom: 9px;
+    }
+
+    .rio-num {
+      font-size: clamp(75px, 19vw, 190px);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--neon-pink), #ff6b6b, var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .rio-tag {
+      font-size: clamp(13px, 2.8vw, 22px);
+      color: var(--white);
+      margin-top: 18px;
+    }
+
+    .rio-dots {
+      display: flex;
+      gap: 18px;
+      margin-top: 36px;
+      justify-content: center;
+    }
+
+    .rio-dot {
+      width: clamp(11px, 2.8vw, 18px);
+      height: clamp(11px, 2.8vw, 18px);
+      border-radius: 50%;
+      background: var(--glass-border);
+      transition: all .3s;
+    }
+
+    .rio-dot.a {
+      background: var(--neon-pink);
+      box-shadow: 0 0 18px var(--neon-pink);
+      transform: scale(1.3);
+    }
+
+    .judge-ov {
+      background: radial-gradient(ellipse at center, rgba(255, 215, 0, .09) 0%, transparent 50%), rgba(0, 0, 0, .97);
+      z-index: 800;
+      padding: 18px;
+    }
+
+    .jo-content {
+      text-align: center;
+      animation: joFade .5s ease;
+    }
+
+    @keyframes joFade {
+      from {
+        opacity: 0;
+        transform: translateY(28px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .jo-icon {
+      font-size: clamp(48px, 11vw, 76px);
+      margin-bottom: 18px;
+      animation: joIconPulse 1.5s ease infinite;
+    }
+
+    @keyframes joIconPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 18px rgba(255, 215, 0, .48))
+      }
+
+      50% {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 36px rgba(255, 215, 0, .78))
+      }
+    }
+
+    .jo-content h2 {
+      font-size: clamp(19px, 3.8vw, 30px);
+      margin-bottom: 9px;
+      color: var(--gold);
+    }
+
+    .jo-content .sub {
+      font-size: clamp(11px, 1.9vw, 15px);
+      color: var(--gray);
+      margin-bottom: 36px;
+    }
+
+    .jo-candidates {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      max-width: 680px;
+      margin-bottom: 28px;
+    }
+
+    .jo-cand {
+      width: clamp(75px, 14vw, 105px);
+      height: clamp(75px, 14vw, 105px);
+      border-radius: 50%;
+      background: var(--glass);
+      border: 3px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      transition: all .15s;
+      text-align: center;
+      padding: 9px;
+    }
+
+    .jo-cand .cname {
+      font-size: clamp(10px, 1.7vw, 13px);
+      font-weight: 600;
+    }
+
+    .jo-cand .cstat {
+      font-size: 9px;
+      color: var(--gray);
+    }
+
+    .jo-cand.was {
+      opacity: .38;
+      border-color: rgba(255, 255, 255, .04);
+    }
+
+    .jo-cand.hl {
+      border-color: var(--neon-pink);
+      background: rgba(255, 46, 146, .2);
+      box-shadow: 0 0 28px rgba(255, 46, 146, .48);
+      transform: scale(1.1);
+    }
+
+    .jo-cand.sel {
+      border-color: var(--gold);
+      background: linear-gradient(135deg, rgba(255, 215, 0, .28), rgba(255, 170, 0, .18));
+      box-shadow: 0 0 46px rgba(255, 215, 0, .58);
+      transform: scale(1.28);
+    }
+
+    .jo-sel-msg {
+      font-size: clamp(15px, 2.8vw, 22px);
+      color: var(--white);
+      opacity: 0;
+      transition: all .3s;
+    }
+
+    .jo-sel-msg.on {
+      opacity: 1;
+    }
+
+    .jo-sel-msg .sn {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .jo-rot-info {
+      margin-top: 28px;
+      padding: 13px 22px;
+      background: rgba(0, 0, 0, .3);
+      border-radius: 11px;
+      font-size: clamp(10px, 1.4vw, 13px);
+      color: var(--gray);
+    }
+
+    .jo-rot-info span {
+      color: var(--neon-blue);
+      font-weight: 600;
+    }
+
+    #winnerScreen {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 26px;
+      background: radial-gradient(ellipse at center, rgba(255, 215, 0, .14) 0%, transparent 60%), linear-gradient(135deg, var(--bg-dark), var(--bg-light));
+      padding: 28px;
+      text-align: center;
+      overflow-y: auto;
+    }
+
+    .w-trophy {
+      font-size: clamp(55px, 14vw, 110px);
+      animation: wTrophy 1s ease infinite;
+    }
+
+    @keyframes wTrophy {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(-5deg)
+      }
+
+      50% {
+        transform: translateY(-18px) rotate(5deg)
+      }
+    }
+
+    .w-name {
+      font-size: clamp(34px, 7.5vw, 68px);
+      font-weight: 900;
+      background: linear-gradient(90deg, var(--gold), #ffaa00, var(--gold));
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: goldShimmer 2s linear infinite;
+    }
+
+    .w-score {
+      font-size: clamp(22px, 4.8vw, 38px);
+      color: var(--white);
+    }
+
+    .w-score .sv {
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .final-lb {
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 22px;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .final-lb h3 {
+      font-size: 17px;
+      margin-bottom: 18px;
+      color: var(--gold);
+    }
+
+    .msg-card {
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 215, 0, .2);
+      border-radius: 15px;
+      padding: 22px;
+      max-width: 480px;
+    }
+
+    .msg-card h4 {
+      font-size: 13px;
+      color: var(--gold);
+      margin-bottom: 11px;
+    }
+
+    .msg-card p {
+      font-size: 15px;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .w-btns {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .confetti-box {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      overflow: hidden;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      animation: cFall linear forwards;
+    }
+
+    @keyframes cFall {
+      0% {
+        transform: translateY(-100%) rotate(0deg);
+        opacity: 1
+      }
+
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0
+      }
+    }
+
+    .snd-btn {
+      position: fixed;
+      bottom: 14px;
+      left: 14px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      color: var(--white);
+      font-size: 17px;
+      cursor: pointer;
+      transition: all .3s;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .snd-btn:hover {
+      border-color: var(--neon-pink);
+      transform: scale(1.1);
+    }
+
+    .snd-btn.muted {
+      opacity: .45;
+    }
+
+    @media(max-width:900px) {
+      .game-main {
+        flex-direction: column;
+      }
+
+      .ctrl-panel {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        border-left: none;
+        border-top: 1px solid var(--glass-border);
+        flex-shrink: 0;
+        max-height: 210px;
+        overflow-y: auto;
+      }
+
+      .panel-sec {
+        flex: 1;
+        min-width: 155px;
+        border-bottom: none;
+        border-right: 1px solid var(--glass-border);
+      }
+
+      .panel-sec:last-child {
+        border-right: none;
+      }
+
+      .timer-block {
+        flex-direction: row;
+        padding: 7px 0;
+      }
+
+      .spbtn {
+        width: calc(50% - 9px);
+        padding: 15px 17px;
+      }
+
+      .htp-steps {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .dialogue-quote {
+        font-size: clamp(18px, 4vw, 36px);
+      }
+    }
+
+    @media(max-width:500px) {
+      .htp-steps {
+        grid-template-columns: 1fr;
+      }
+
+      .htp-pts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dialogue-quote {
+        font-size: clamp(16px, 5vw, 28px);
+      }
+    }
+
+    /* ══ PLAYER LOBBY ══ */
+    #playerLobbyScreen {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      background: radial-gradient(ellipse at 30% 30%, rgba(179, 71, 234, .12) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 70%, rgba(0, 212, 255, .08) 0%, transparent 50%),
+        linear-gradient(135deg, var(--bg-dark), var(--bg-light));
+      padding: 36px 22px;
+      overflow-y: auto;
+    }
+
+    .lobby-wrap {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .lobby-head {
+      text-align: center;
+    }
+
+    .lobby-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 16px;
+      background: rgba(179, 71, 234, .1);
+      border: 1px solid rgba(179, 71, 234, .3);
+      border-radius: 28px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--neon-purple);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .lobby-head h1 {
+      font-size: clamp(26px, 5vw, 42px);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+
+    .lobby-head p {
+      font-size: clamp(12px, 1.8vw, 15px);
+      color: var(--gray);
+    }
+
+    .lobby-players {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .lobby-player {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      transition: all .3s;
+      animation: stepIn .4s ease both;
+    }
+
+    .lobby-player:hover {
+      border-color: rgba(255, 255, 255, .2);
+      transform: translateX(4px);
+    }
+
+    .lobby-player .lp-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      background: linear-gradient(135deg, rgba(179, 71, 234, .3), rgba(0, 212, 255, .2));
+      border: 2px solid rgba(179, 71, 234, .4);
+      flex-shrink: 0;
+    }
+
+    .lobby-player .lp-name {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    /* Avatar styles for LB, scoring, judge, etc */
+    .lb-avatar {
+      font-size: 14px;
+      margin-right: 4px;
+    }
+
+    .spbtn .sp-avatar {
+      font-size: 22px;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .jo-cand .c-avatar {
+      font-size: 28px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .w-avatar {
+      font-size: clamp(42px, 10vw, 80px);
+      margin-bottom: -8px;
+      filter: drop-shadow(0 0 18px rgba(255, 215, 0, .5));
+      animation: wTrophy 1s ease infinite;
+    }
+
+    /* Admin avatar picker */
+    .player-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 7px;
+    }
+
+    .player-item .av-pick {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: rgba(0, 0, 0, .3);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .3s;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .player-item .av-pick:hover {
+      border-color: var(--neon-purple);
+      transform: scale(1.1);
+    }
+
+    .av-dropdown {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(20, 20, 35, .97);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 8px;
+      gap: 4px;
+      flex-wrap: wrap;
+      width: 200px;
+      z-index: 50;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .5);
+    }
+
+    .av-dropdown.open {
+      display: flex;
+    }
+
+    .av-dropdown .av-opt {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .av-dropdown .av-opt:hover {
+      background: rgba(179, 71, 234, .2);
+      transform: scale(1.2);
+    }
+
+    .lobby-player .lp-remove {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, .15);
+      color: var(--danger);
+      font-size: 18px;
+      cursor: pointer;
+      transition: all .3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lobby-player .lp-remove:hover {
+      background: rgba(239, 68, 68, .3);
+      transform: scale(1.15);
+    }
+
+    .lobby-player.removing {
+      animation: lpRemove .35s ease forwards;
+    }
+
+    @keyframes lpRemove {
+      0% {
+        opacity: 1;
+        transform: translateX(0);
+        max-height: 80px
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(60px);
+        max-height: 0;
+        padding: 0;
+        margin: 0;
+        overflow: hidden
+      }
+    }
+
+    .lobby-count {
+      font-size: 12px;
+      color: var(--gray);
+      text-align: center;
+    }
+
+    .lobby-count span {
+      color: var(--neon-blue);
+      font-weight: 700;
+    }
+
+    .lobby-min-warn {
+      font-size: 11px;
+      color: var(--warning);
+      text-align: center;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .lobby-min-warn.visible {
+      opacity: 1;
+    }
+
+    .lobby-btns {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .lobby-btns .btn-start {
+      padding: 16px 68px;
+      font-size: clamp(15px, 2.4vw, 21px);
+      font-weight: 700;
+      font-family: inherit;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, var(--neon-pink), #ff6b6b);
+      color: #fff;
+      cursor: pointer;
+      transition: all .3s;
+      box-shadow: 0 10px 38px rgba(255, 46, 146, .38);
+      letter-spacing: 1px;
+    }
+
+    .lobby-btns .btn-start:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 0 14px 48px rgba(255, 46, 146, .62);
+    }
+
+    .lobby-btns .btn-start:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .lobby-btns .back-lnk {
+      background: none;
+      border: none;
+      color: var(--gray);
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      transition: color .2s;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .lobby-btns .back-lnk:hover {
+      color: var(--white);
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, .2);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--glass-border);
+      border-radius: 3px;
+    }
+
+    /* ══ SOUNDS TAB ══ */
+    .snd-category {
+      margin-bottom: 22px;
+    }
+
+    .snd-category-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--neon-purple);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(179, 71, 234, .2);
+    }
+
+    .snd-row {
+      display: grid;
+      grid-template-columns: 26px 1fr auto auto auto auto;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 9px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      margin-bottom: 6px;
+      transition: border-color .2s;
+    }
+
+    .snd-row:hover {
+      border-color: rgba(179, 71, 234, .3);
+    }
+
+    .snd-row.disabled {
+      opacity: .45;
+    }
+
+    .snd-toggle-wrap {
+      display: flex;
+      align-items: center;
+    }
+
+    .snd-toggle {
+      position: relative;
+      width: 32px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .snd-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .snd-slider-bg {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, .12);
+      border-radius: 18px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .snd-toggle input:checked+.snd-slider-bg {
+      background: var(--neon-purple);
+    }
+
+    .snd-slider-bg::before {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform .2s;
+    }
+
+    .snd-toggle input:checked+.snd-slider-bg::before {
+      transform: translateX(14px);
+    }
+
+    .snd-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .snd-range-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      min-width: 68px;
+    }
+
+    .snd-range-lbl {
+      font-size: 9px;
+      color: var(--gray);
+    }
+
+    .snd-range-wrap input[type=range] {
+      width: 68px;
+      height: 3px;
+      accent-color: var(--neon-blue);
+      cursor: pointer;
+    }
+
+    .snd-style-sel {
+      font-size: 10px;
+      background: rgba(0, 0, 0, .4);
+      border: 1px solid var(--glass-border);
+      color: var(--white);
+      border-radius: 6px;
+      padding: 3px 5px;
+      cursor: pointer;
+      font-family: inherit;
+      min-width: 72px;
+    }
+
+    .snd-play-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--neon-pink);
+      background: rgba(255, 46, 146, .1);
+      color: var(--neon-pink);
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+      flex-shrink: 0;
+    }
+
+    .snd-play-btn:hover {
+      background: rgba(255, 46, 146, .28);
+      transform: scale(1.15);
+    }
+
+    .snd-reset-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 14px;
+    }
+
+    .snd-reset-btn {
+      font-size: 11px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      color: var(--gray);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s;
+    }
+
+    .snd-reset-btn:hover {
+      border-color: var(--neon-pink);
+      color: var(--neon-pink);
+    }
+
+    .snd-url-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px 8px 44px;
+      border-radius: 0 0 9px 9px;
+      background: rgba(0, 0, 0, .18);
+      border: 1px solid var(--glass-border);
+      border-top: none;
+      margin-top: -7px;
+      margin-bottom: 6px;
+    }
+
+    .snd-url-lbl {
+      font-size: 9px;
+      color: var(--neon-blue);
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-weight: 600;
+      letter-spacing: .5px;
+    }
+
+    .snd-url-inp {
+      flex: 1;
+      background: rgba(0, 0, 0, .35);
+      border: 1px solid var(--glass-border);
+      border-radius: 6px;
+      color: var(--white);
+      font-size: 10px;
+      font-family: inherit;
+      padding: 4px 8px;
+      transition: border-color .2s;
+      min-width: 0;
+    }
+
+    .snd-url-inp:focus {
+      outline: none;
+      border-color: var(--neon-blue);
+    }
+
+    .snd-url-inp::placeholder {
+      color: rgba(255, 255, 255, .28);
+    }
+
+    .snd-url-inp.has-url {
+      border-color: rgba(74, 222, 128, .5);
+      color: #4ade80;
+    }
+
+    .snd-url-clear {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid rgba(239, 68, 68, .4);
+      background: rgba(239, 68, 68, .1);
+      color: #ef4444;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all .2s;
+    }
+
+    .snd-url-clear:hover {
+      background: rgba(239, 68, 68, .28);
+    }
+
+    .snd-url-test {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid rgba(74, 222, 128, .4);
+      background: rgba(74, 222, 128, .1);
+      color: #4ade80;
+      font-size: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all .2s;
+    }
+
+    .snd-url-test:hover {
+      background: rgba(74, 222, 128, .28);
+    }
+
+    /* URL list */
+    .snd-url-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 6px 10px 8px 44px;
+      background: rgba(0, 0, 0, .18);
+      border: 1px solid var(--glass-border);
+      border-top: none;
+      border-radius: 0 0 9px 9px;
+      margin-top: -7px;
+      margin-bottom: 6px;
+    }
+
+    .snd-url-list-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .snd-url-list-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .8px;
+      color: var(--neon-blue);
+      text-transform: uppercase;
+    }
+
+    .snd-url-list-hint {
+      font-size: 9px;
+      color: var(--gray);
+      font-style: italic;
+    }
+
+    .snd-url-entry {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .snd-url-num {
+      font-size: 9px;
+      color: var(--gray);
+      min-width: 14px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .snd-add-url-btn {
+      margin-top: 5px;
+      font-size: 10px;
+      padding: 4px 10px;
+      border-radius: 14px;
+      border: 1px dashed rgba(0, 212, 255, .4);
+      background: rgba(0, 212, 255, .06);
+      color: var(--neon-blue);
+      cursor: pointer;
+      transition: all .2s;
+      align-self: flex-start;
+    }
+
+    .snd-add-url-btn:hover {
+      background: rgba(0, 212, 255, .15);
+      border-style: solid;
+    }
+
+    /* Example strip */
+    .snd-example-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border-radius: 7px;
+      background: rgba(0, 212, 255, .05);
+      border: 1px solid rgba(0, 212, 255, .18);
+      margin-bottom: 4px;
+    }
+
+    .snd-example-badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: var(--neon-blue);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .snd-example-url {
+      flex: 1;
+      font-size: 9px;
+      color: rgba(255, 255, 255, .45);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: monospace;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+
+    <!-- HOME -->
+    <div id="homeScreen" class="screen active">
+      <div class="hero">
+        <span class="emoji">🎬</span>
+        <h1>KUCHH BHI</h1>
+        <p>Guess The Frame</p>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="showHowToPlay()">▶ Start Game</button>
+        <button class="btn-outline" onclick="showHowToPlay()">📖 How to Play</button>
+        <button class="btn-secondary" onclick="AdminPanel.open()">⚙️ Admin Panel</button>
+      </div>
+    </div>
+
+    <!-- HOW TO PLAY -->
+    <div id="howToPlayScreen" class="screen">
+      <div class="htp-wrap">
+        <div class="htp-head">
+          <div class="htp-badge">📖 Game Guide</div>
+          <h1>How to Play</h1>
+          <p>Everything you need to know before the first frame drops.</p>
+        </div>
+        <div class="htp-sec-lbl">Step-by-step</div>
+        <div class="htp-steps">
+          <div class="htp-step pink">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div class="htp-step-num">01</div>
+              <div class="htp-step-icon">🖼️</div>
+            </div>
+            <h3>A Frame / Dialogue Appears</h3>
+            <p>A still image or famous dialogue from a movie or TV show is revealed. No title, no hints — just guess!
+            </p>
+          </div>
+          <div class="htp-step blue">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div class="htp-step-num">02</div>
+              <div class="htp-step-icon">⏱️</div>
+            </div>
+            <h3>Timer Starts</h3>
+            <p>A countdown begins the moment the frame appears. Shout the answer before time runs out!</p>
+          </div>
+          <div class="htp-step gold">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div class="htp-step-num">03</div>
+              <div class="htp-step-icon">👨‍⚖️</div>
+            </div>
+            <h3>Judge Phase</h3>
+            <p>When time runs out a Judge is spotlighted. They decide which player shouted correctly first.</p>
+          </div>
+          <div class="htp-step green">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div class="htp-step-num">04</div>
+              <div class="htp-step-icon">🎯</div>
+            </div>
+            <h3>Award Points</h3>
+            <p>Tap the winning player's name on the scoring screen. Points land instantly on the board.</p>
+          </div>
+          <div class="htp-step purple">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div class="htp-step-num">05</div>
+              <div class="htp-step-icon">🔄</div>
+            </div>
+            <h3>Judge Rotates</h3>
+            <p>Every few rounds a new Judge is randomly selected so everyone gets a turn to referee.</p>
+          </div>
+          <div class="htp-step teal">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div class="htp-step-num">06</div>
+              <div class="htp-step-icon">🏆</div>
+            </div>
+            <h3>Highest Score Wins</h3>
+            <p>After all sections the player with the most points wins. Ties? The Judge breaks them.</p>
+          </div>
+        </div>
+        <div class="htp-sec-lbl">Scoring</div>
+        <div class="htp-pts-grid">
+          <div class="htp-pts-card correct">
+            <div class="pi">✅</div>
+            <div class="pv" id="htp-pts-c">10</div>
+            <div class="pl">pts — Correct Answer</div>
+          </div>
+          <div class="htp-pts-card judge">
+            <div class="pi">👨‍⚖️</div>
+            <div class="pv" id="htp-pts-j">20</div>
+            <div class="pl">pts — Judge Answers Correctly</div>
+          </div>
+          <div class="htp-pts-card skip">
+            <div class="pi">🤷</div>
+            <div class="pv">0</div>
+            <div class="pl">pts — No One Knows (skipped)</div>
+          </div>
+        </div>
+        <div class="htp-tips">
+          <div class="htp-tips-title">💡 Pro Tips</div>
+          <div class="htp-tip"><span class="ti">🎙️</span><span>Shout clearly — the Judge needs to hear you over the
+              crowd.</span></div>
+          <div class="htp-tip"><span class="ti">👁️</span><span>Look for lighting, costumes and set design — not just
+              faces.</span></div>
+          <div class="htp-tip"><span class="ti">⚡</span><span>First correct shout wins — speed matters as much as
+              knowledge.</span></div>
+          <div class="htp-tip"><span class="ti">🤫</span><span>Don't reveal partial answers — someone might steal your
+              point!</span></div>
+        </div>
+        <div class="htp-cta">
+          <button class="btn-start" onclick="PlayerLobby.show()">🎬 Let's Play!</button>
+          <button class="back-lnk" onclick="goHome()">← Back to Home</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAYER LOBBY -->
+    <div id="playerLobbyScreen" class="screen">
+      <div class="lobby-wrap">
+        <div class="lobby-head">
+          <div class="lobby-badge">👥 Player Lobby</div>
+          <h1>Who's Playing?</h1>
+          <p>Remove players who aren't joining this round.</p>
+        </div>
+        <div class="lobby-count"><span id="lobbyCount">5</span> players ready</div>
+        <div class="lobby-players" id="lobbyPlayerList"></div>
+        <div class="lobby-min-warn" id="lobbyMinWarn">⚠️ Need at least 2 players to start</div>
+        <div class="lobby-btns">
+          <button class="btn-start" id="lobbyStartBtn" onclick="PlayerLobby.start()">🎬 Start Game!</button>
+          <button class="back-lnk" onclick="PlayerLobby.back()">← Back</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CINEMATIC INTRO -->
+    <div id="cinematicIntroScreen" class="screen">
+      <div class="ci-particles" id="ciParticles"></div>
+      <div class="ci-blob ci-blob1" id="ciBlob1"></div>
+      <div class="ci-blob ci-blob2" id="ciBlob2"></div>
+      <div class="ci-blob ci-blob3" id="ciBlob3"></div>
+      <div class="ci-film top" id="ciFilmTop">
+        <div class="ci-film-track">
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎬</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎥</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎞️</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">📽️</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎭</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">⭐</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🌟</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎬</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎥</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎞️</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">📽️</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎭</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">⭐</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🌟</div>
+          <div class="ci-film-hole"></div>
+        </div>
+      </div>
+      <div class="ci-film bot" id="ciFilmBot">
+        <div class="ci-film-track">
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎯</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🏆</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎪</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎨</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎮</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎸</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎺</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎯</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🏆</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎪</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎨</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎮</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎸</div>
+          <div class="ci-film-hole"></div>
+          <div class="ci-film-cell">🎺</div>
+          <div class="ci-film-hole"></div>
+        </div>
+      </div>
+      <div class="ci-flare outer" id="ciFlareOuter"></div>
+      <div class="ci-flare inner" id="ciFlareInner"></div>
+      <div class="ci-countdown" id="ciCountdown">
+        <div class="ci-count-num" id="ciCountNum">3</div>
+      </div>
+      <div class="ci-logo-wrap">
+        <div class="ci-logo" id="ciLogo">
+          <span class="ci-clapper">🎬</span>
+          <div class="ci-title">KUCHH BHI</div>
+          <div class="ci-divider" id="ciDivider"></div>
+          <div class="ci-sub" id="ciSub"></div>
+          <div class="ci-tagline" id="ciTagline">— Can you guess them all? —</div>
+        </div>
+      </div>
+      <div class="ci-progress" id="ciProgress">
+        <div class="ci-progress-fill" id="ciProgressFill"></div>
+      </div>
+      <div class="ci-skip" id="ciSkip" onclick="CinematicIntro.skip()">TAP TO SKIP ›</div>
+    </div>
+
+    <!-- GAME -->
+    <div id="gameScreen" class="screen">
+      <header class="game-header">
+        <div class="logo">🎬 KUCHH BHI</div>
+        <div class="game-progress">
+          <div class="sec-badge"><span id="curSecIcon">🎬</span><span id="curSecName">Section 1</span></div>
+          <div class="round-info" id="roundInfo">Round 1 / 5</div>
+        </div>
+        <div class="judge-badge" id="judgeBadge">
+          <span>👨‍⚖️</span>
+          <span class="jname" id="curJudge">-</span>
+          <span class="jrounds" id="judgeRoundsLeft">3 left</span>
+        </div>
+      </header>
+      <div class="game-main">
+        <div class="frame-area">
+          <div class="state-ind" id="stateInd">READY</div>
+
+          <!-- Frame display with smooth transitions -->
+          <div class="frame-display" id="frameDisplay">
+            <div class="frame-placeholder" id="framePlaceholder">
+              <span class="emoji">🎬</span>
+              <h2>KUCHH BHI</h2>
+            </div>
+            <div class="frame-layer" id="frameLayer"></div>
+
+            <!-- Dialogue display -->
+            <div class="frame-dialogue" id="frameDialogue">
+              <div class="dialogue-content">
+                <div class="dialogue-quote" id="dialogueQuote"></div>
+                <div class="dialogue-context" id="dialogueContext">Guess the Movie / Show</div>
+              </div>
+            </div>
+
+            <!-- Image container with crossfade -->
+            <div class="frame-image-container" id="imageContainer"></div>
+
+            <div class="answer-overlay" id="answerOverlay">
+              <div class="ans-year" id="ansYear"></div>
+              <div class="ans-divider"></div>
+              <div class="ans-title" id="ansTitle"></div>
+              <div class="ans-dialogue" id="ansDialogue"></div>
+            </div>
+          </div>
+
+          <div class="scoring-overlay" id="scoringOv">
+            <div class="scoring-title">🎯 Who Got It Right?</div>
+            <div class="scoring-sub">Click the player who answered correctly</div>
+            <div class="scoring-grid" id="scoringGrid"></div>
+            <div class="locked-ind" id="lockedInd">✓ Points Awarded — Moving to Next Round...</div>
+            <div class="skipped-ind" id="skippedInd">⏭ Skipped — No One Knew</div>
+          </div>
+          <button class="skip-btn" id="skipBtn" onclick="GameController.skipRound()">⏭ Skip</button>
+        </div>
+        <aside class="ctrl-panel">
+          <div class="panel-sec">
+            <h3>🎯 Round Controls</h3>
+            <div class="nonk-panel" id="nonkPanel">
+              <button class="nonk-btn" id="nonkBtn" onclick="GameController.noOneKnows()">🤷 No One Knows — Skip
+                Round</button>
+              <div class="skip-msg" id="skipMsgEl">Skipping to next round...</div>
+            </div>
+            <div class="timer-block">
+              <div class="timer-circle" id="timerCircle">
+                <svg viewBox="0 0 100 100">
+                  <circle class="tbg" cx="50" cy="50" r="42"></circle>
+                  <circle class="tpg" id="timerProg" cx="50" cy="50" r="42" stroke-dasharray="264"
+                    stroke-dashoffset="0"></circle>
+                </svg>
+                <span class="ttx" id="timerTxt">30</span>
+              </div>
+              <div class="timer-label" id="timerLbl">Time Remaining</div>
+            </div>
+          </div>
+          <div class="panel-sec">
+            <h3>🏆 Leaderboard</h3>
+            <div class="leaderboard" id="leaderboard"></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- WINNER -->
+    <div id="winnerScreen" class="screen">
+      <div class="confetti-box" id="confettiBox"></div>
+      <div class="w-trophy">🏆</div>
+      <div class="w-name" id="winnerName">WINNER</div>
+      <div class="w-score">Score: <span class="sv" id="winnerScore">0</span> points</div>
+      <div class="final-lb">
+        <h3>📊 Final Standings</h3>
+        <div class="leaderboard" id="finalLB"></div>
+      </div>
+      <div class="msg-card">
+        <h4>💌 Message From Creator</h4>
+        <p id="creatorMsg">Thank you for playing!</p>
+      </div>
+      <div class="w-btns">
+        <button class="btn-primary" onclick="GameController.playAgain()">🔄 Play Again</button>
+        <button class="btn-secondary" onclick="GameController.goHome()">🏠 Home</button>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="modal-overlay" id="adminModal">
+      <div class="modal-content" style="position:relative;">
+        <div class="modal-header">
+          <h2>⚙️ Admin Panel</h2><button class="close-btn" onclick="AdminPanel.close()">×</button>
+        </div>
+        <div class="admin-tabs">
+          <button class="admin-tab" onclick="AdminPanel.tab('sections')">📁 Sections</button>
+          <button class="admin-tab active" onclick="AdminPanel.tab('players')">👥 Players</button>
+          <button class="admin-tab" onclick="AdminPanel.tab('settings')">⚙️ Settings</button>
+          <button class="admin-tab" onclick="AdminPanel.tab('sounds')">🔊 Sounds</button>
+        </div>
+        <div class="admin-tab-content" id="tab-sections">
+          <div class="section-list" id="sectionList"></div><button class="add-section-btn"
+            onclick="AdminPanel.addSection()">➕ Add New Section</button>
+        </div>
+        <div class="admin-tab-content active" id="tab-players">
+          <div class="admin-grid">
+            <div class="admin-section">
+              <h3>👥 Players</h3>
+              <div class="player-list" id="playerList"></div>
+              <button class="add-player-btn" onclick="AdminPanel.addPlayer()">➕ Add Player</button>
+              <div class="judge-info-panel">
+                <h4>👨‍⚖️ Judge Rotation Preview</h4>
+                <div class="judge-stats">
+                  <div class="judge-stat">
+                    <div class="label">Total Rounds</div>
+                    <div class="value" id="prevTotalRounds">0</div>
+                  </div>
+                  <div class="judge-stat">
+                    <div class="label">Rounds Per Judge</div>
+                    <div class="value" id="prevRPJ">0</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="admin-tab-content" id="tab-settings">
+          <div class="admin-grid">
+            <div class="admin-section">
+              <h3>⏱ Timer</h3>
+              <div class="input-group"><label>Round Duration (s)</label><input type="number" id="cfgTimer" value="30"
+                  min="5" max="120"></div>
+              <div class="input-group"><label>Judge Phase (s)</label><input type="number" id="cfgJudgeTimer" value="5"
+                  min="3" max="15"></div>
+              <div class="input-group"><label>Answer Reveal (s)</label><input type="number" id="cfgReveal" value="2"
+                  min="1" max="10"></div>
+            </div>
+            <div class="admin-section">
+              <h3>🎯 Points</h3>
+              <div class="input-group"><label>Correct Answer</label><input type="number" id="cfgPts" value="10" min="1"
+                  max="100"></div>
+              <div class="input-group"><label>Judge Bonus</label><input type="number" id="cfgJPts" value="20" min="1"
+                  max="100"></div>
+            </div>
+            <div class="admin-section full-width">
+              <h3>💌 Creator Message</h3>
+              <div class="input-group"><textarea id="cfgMsg"
+                  placeholder="Enter a message...">Thank you for playing KUCHH BHI!</textarea></div>
+            </div>
+            <div class="admin-section full-width">
+              <h3>🔊 Volume</h3>
+              <div class="input-group"><label>Master Volume</label><input type="range" id="cfgVol" min="0" max="100"
+                  value="70" oninput="SoundManager.setVolume(this.value/100)"></div>
+            </div>
+
+          </div>
+        </div>
+        <div class="admin-tab-content" id="tab-sounds">
+          <div class="admin-grid">
+            <div class="admin-section full-width">
+              <h3>🔊 Sound Customization</h3>
+              <div class="snd-reset-bar">
+                <button class="snd-reset-btn" onclick="AdminPanel.resetAllSounds()">↺ Reset All to Default</button>
+              </div>
+              <div id="soundsTabContent"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- overlays -->
+  <div class="sec-intro-ov" id="secIntroOv">
+    <div class="sio-content">
+      <div class="sio-icon" id="sioIcon">🎬</div>
+      <div class="sio-lbl">Section</div>
+      <div class="sio-name" id="sioName">Movies</div>
+      <div class="sio-meta"><span id="sioRounds">5</span> Rounds</div>
+      <div class="sio-dots" id="sioDots"></div>
+    </div>
+  </div>
+
+  <div class="round-intro-ov" id="roundIntroOv">
+    <div class="rio-content">
+      <div class="rio-lbl">Round</div>
+      <div class="rio-num" id="rioNum">1</div>
+      <div class="rio-tag" id="rioTag">Get Ready!</div>
+      <div class="rio-dots">
+        <div class="rio-dot" id="rd1"></div>
+        <div class="rio-dot" id="rd2"></div>
+        <div class="rio-dot" id="rd3"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="judge-ov" id="judgeOv">
+    <div class="jo-content">
+      <div class="jo-icon">👨‍⚖️</div>
+      <h2>Selecting Judge</h2>
+      <p class="sub">Who will judge this round?</p>
+      <div class="jo-candidates" id="joCandidates"></div>
+      <div class="jo-sel-msg" id="joSelMsg"><span class="sn" id="joSelName">Player</span> is the Judge!</div>
+      <div class="jo-rot-info">Judge serves for <span id="joServeRounds">3</span> rounds</div>
+    </div>
+  </div>
+  </div>
+
+  <div class="screen-flash" id="screenFlash"></div>
+  <button class="snd-btn" id="sndBtn" onclick="SoundManager.toggleMute()">🔊</button>
+
+  <script>
+    /* ═══ NAV ═══ */
+    function showHowToPlay() {
+      SoundManager.playClick();
+      document.getElementById('htp-pts-c').textContent = GS.settings.pointsPerAnswer;
+      document.getElementById('htp-pts-j').textContent = GS.settings.judgePoints;
+      UI.showScreen('howToPlayScreen');
+    }
+    function goHome() { SoundManager.playClick(); UI.showScreen('homeScreen'); }
+
+    /* ═══ PLAYER LOBBY ═══ */
+    const PlayerLobby = {
+      _originalPlayers: [],
+      show() {
+        SoundManager.playClick();
+        this._originalPlayers = GS.players.map(p => ({ ...p }));
+        this.render();
+        UI.showScreen('playerLobbyScreen');
+      },
+      render() {
+        const list = document.getElementById('lobbyPlayerList');
+        const count = document.getElementById('lobbyCount');
+        const warn = document.getElementById('lobbyMinWarn');
+        const startBtn = document.getElementById('lobbyStartBtn');
+        const colors = ['#ff2e92', '#00d4ff', '#b347ea', '#ffd700', '#4ade80', '#14b8a6', '#ff6b6b', '#fbbf24'];
+        list.innerHTML = GS.players.map((p, i) => {
+          const color = colors[i % colors.length];
+          const initial = p.avatar || p.name.charAt(0).toUpperCase();
+          return `<div class="lobby-player" style="animation-delay:${i * 0.06}s">
+            <div class="lp-avatar" style="background:linear-gradient(135deg,${color}44,${color}22);border-color:${color}66">${initial}</div>
+            <div class="lp-name">${p.name}</div>
+            <button class="lp-remove" onclick="PlayerLobby.remove(${i})" title="Remove ${p.name}">×</button>
+          </div>`;
+        }).join('');
+        count.innerHTML = `<span>${GS.players.length}</span> player${GS.players.length !== 1 ? 's' : ''} ready`;
+        const canStart = GS.players.length >= 2;
+        startBtn.disabled = !canStart;
+        warn.classList.toggle('visible', !canStart);
+      },
+      remove(i) {
+        if (GS.players.length <= 2) { SoundManager.playSkip(); document.getElementById('lobbyMinWarn').classList.add('visible'); return; }
+        SoundManager.playClick();
+        const items = document.querySelectorAll('.lobby-player');
+        if (items[i]) {
+          items[i].classList.add('removing');
+          setTimeout(() => { GS.players.splice(i, 1); this.render(); }, 350);
+        } else { GS.players.splice(i, 1); this.render(); }
+      },
+      start() {
+        if (GS.players.length < 2) return;
+        SoundManager.playClick();
+        CinematicIntro.play();
+      },
+      back() {
+        SoundManager.playClick();
+        GS.players = this._originalPlayers.map(p => ({ ...p }));
+        UI.showScreen('howToPlayScreen');
+      }
+    };
+
+    /* ═══ SOUND ═══ */
+    const SoundManager = {
+      ctx: null, vol: 0.7, muted: false,
+
+      /* ── Per-sound config ── */
+      _defaultCfg: () => ({ enabled: true, pitch: 1, speed: 1, style: 'default', audioUrls: [], exampleEnabled: false }),
+      soundConfig: {},
+      _sc(name) {
+        if (!this.soundConfig) this.soundConfig = {};
+        if (!this.soundConfig[name]) this.soundConfig[name] = SoundManager._defaultCfg();
+        return this.soundConfig[name];
+      },
+      _ok(name) { const c = this._sc(name); return !this.muted && c.enabled; },
+      /* ── Single shared audio instance + no-repeat state ── */
+      _currentAudio: null,   // only ONE custom audio alive at a time
+      _lastPlayed: {},     // { soundKey: lastUrl } — no consecutive repeat
+
+      /**
+       * Robust custom-audio playback engine:
+       *  • Empty list         → return false (fall through to synthesis)
+       *  • One URL            → play it
+       *  • Multiple URLs      → random pick, skipping last-played to avoid repeats
+       *  • Stop current audio before starting a new one (no overlap)
+       *  • Broken / CORS URLs silently skipped via error / rejected-play handler
+       *  • Audio object released on end/error (no memory leaks)
+       */
+      _playCustom(name) {
+        const c = this._sc(name);
+        let urls = (c.audioUrls || []).filter(u => u && u.trim());
+        if (c.exampleEnabled && c._exampleUrl) {
+          urls = [c._exampleUrl].concat(urls);
+        }
+        if (!urls.length) return false;   // nothing configured → use synthesis
+        if (this.muted) return true;    // muted: consume call, skip synthesis
+
+        // Pick URL – skip last played when multiple options exist
+        let candidates = urls;
+        if (urls.length > 1 && this._lastPlayed[name]) {
+          const filtered = urls.filter(u => u.trim() !== this._lastPlayed[name]);
+          if (filtered.length) candidates = filtered;
+        }
+        const url = candidates[Math.floor(Math.random() * candidates.length)].trim();
+        this._lastPlayed[name] = url;
+
+        // Stop whatever is currently playing
+        this._stopCurrent();
+
+        try {
+          const audio = new Audio();
+          audio.volume = Math.max(0, Math.min(1, this.vol));
+          audio.playbackRate = Math.max(0.25, Math.min(4, c.speed));
+          this._currentAudio = audio;
+
+          // Release on natural end
+          audio.addEventListener('ended', () => {
+            if (this._currentAudio === audio) { audio.src = ''; this._currentAudio = null; }
+          }, { once: true });
+
+          // Release + silently skip broken URL
+          audio.addEventListener('error', () => {
+            if (this._currentAudio === audio) { audio.src = ''; this._currentAudio = null; }
+          }, { once: true });
+
+          audio.src = url;
+          audio.play().catch(() => {
+            if (this._currentAudio === audio) { audio.src = ''; this._currentAudio = null; }
+          });
+        } catch (e) {
+          this._currentAudio = null;
+        }
+        return true;
+      },
+      /* Stop and release the shared audio instance immediately */
+      _stopCurrent() {
+        if (this._currentAudio) {
+          try { this._currentAudio.pause(); } catch (e) { }
+          try { this._currentAudio.src = ''; } catch (e) { }
+          this._currentAudio = null;
+        }
+      },
+      /* Style presets — returns overridden tone params */
+      _styleParams(style) {
+        const presets = {
+          default: {},
+          retro: { type: 'square' },
+          soft: { type: 'sine', v: 0.4, a: 0.04, rel: 0.18 },
+          arcade: { type: 'sawtooth', v: 0.6, a: 0.002, dec: 0.03, rel: 0.04 }
+        };
+        return presets[style] || {};
+      },
+      /* Wrap a single tone call with per-sound pitch/speed/style overrides */
+      _tone(name, params) {
+        const c = this._sc(name);
+        const sp = this._styleParams(c.style);
+        const merged = Object.assign({}, params, sp);
+        if (merged.f !== undefined) merged.f = merged.f * c.pitch;
+        if (merged.d !== undefined) merged.d = merged.d / c.speed;
+        this.tone(merged);
+      },
+      /* Wrap a chord call */
+      _chord(name, freqs, d, v) {
+        const c = this._sc(name);
+        const pitchedFreqs = freqs.map(f => f * c.pitch);
+        const scaledD = d / c.speed;
+        this.chord(pitchedFreqs, scaledD, v);
+      },
+
+      init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); },
+      _ensure() { if (!this.ctx) this.init(); },
+      tone({ f = 440, d = 0.2, type = 'sine', v = 1, a = 0.01, dec = 0.1, sus = 0.3, rel = 0.1 }) {
+        if (this.muted) return; this._ensure();
+        const c = this.ctx, o = c.createOscillator(), g = c.createGain();
+        o.type = type; o.frequency.setValueAtTime(f, c.currentTime);
+        const t = c.currentTime;
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v * this.vol, t + a);
+        g.gain.linearRampToValueAtTime(v * this.vol * sus, t + a + dec);
+        g.gain.setValueAtTime(v * this.vol * sus, t + d - rel);
+        g.gain.exponentialRampToValueAtTime(0.001, t + d);
+        o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + d + 0.05);
+      },
+      chord(freqs, d = 0.3, v = 0.5) { freqs.forEach((f, i) => setTimeout(() => this.tone({ f, d, v: v * .7, a: 0.02, dec: 0.1, sus: 0.4, rel: 0.15 }), i * 30)); },
+
+      playClick() { if (!this._ok('click')) return; if (this._playCustom('click')) return; this._tone('click', { f: 800, d: 0.08, type: 'square', v: 0.3, a: 0.005, dec: 0.02, sus: 0.1, rel: 0.03 }); },
+      playHover() { if (!this._ok('hover')) return; if (this._playCustom('hover')) return; this._tone('hover', { f: 1200, d: 0.05, type: 'sine', v: 0.1, a: 0.005, dec: 0.01, sus: 0.1, rel: 0.02 }); },
+      playCountBeep(n) {
+        if (!this._ok('countBeep')) return; if (this._playCustom('countBeep')) return; this._ensure();
+        const c = this._sc('countBeep');
+        const pm = c.pitch, sm = c.speed;
+        if (n > 0) {
+          const m = { 3: 330, 2: 440, 1: 550 }; const freq = (m[n] || 440) * pm;
+          this._tone('countBeep', { f: freq, d: 0.22 / sm, type: 'square', v: 0.65, a: 0.005, dec: 0.06, sus: 0.55, rel: 0.1 });
+          this._tone('countBeep', { f: freq * 2, d: 0.18 / sm, v: 0.22, a: 0.01, dec: 0.05, sus: 0.3, rel: 0.08 });
+        } else {
+          [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => {
+            this._tone('countBeep', { f: f * pm, d: 0.7 / sm, type: 'square', v: 0.5, a: 0.01, dec: 0.08, sus: 0.5, rel: 0.2 });
+            this._tone('countBeep', { f: f * pm * 1.5, d: 0.5 / sm, v: 0.2, a: 0.02, dec: 0.05, sus: 0.3, rel: 0.12 });
+          }, i * 60 / sm));
+        }
+      },
+      playWhoosh() {
+        if (!this._ok('whoosh')) return; if (this._playCustom('whoosh')) return; this._ensure();
+        const c = this.ctx, cfg = this._sc('whoosh');
+        const dur = 0.7 / cfg.speed;
+        const buf = c.createBuffer(1, c.sampleRate * dur, c.sampleRate);
+        const d = buf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+        const src = c.createBufferSource(), g = c.createGain(), filt = c.createBiquadFilter();
+        filt.type = 'bandpass';
+        filt.frequency.setValueAtTime(600 * cfg.pitch, c.currentTime);
+        filt.frequency.exponentialRampToValueAtTime(3800 * cfg.pitch, c.currentTime + 0.5 / cfg.speed);
+        filt.Q.value = 0.4;
+        g.gain.setValueAtTime(0, c.currentTime); g.gain.linearRampToValueAtTime(0.45 * this.vol, c.currentTime + 0.06 / cfg.speed); g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+        src.buffer = buf; src.connect(filt); filt.connect(g); g.connect(c.destination); src.start(c.currentTime);
+      },
+      playHum() {
+        if (!this._ok('hum')) return; if (this._playCustom('hum')) return; this._ensure();
+        const c = this.ctx, cfg = this._sc('hum');
+        [48, 96, 144].forEach((f, i) => {
+          const o = c.createOscillator(), g = c.createGain();
+          o.type = 'sawtooth'; o.frequency.value = f * cfg.pitch;
+          g.gain.setValueAtTime(0, c.currentTime);
+          g.gain.linearRampToValueAtTime((0.06 - i * .015) * this.vol, c.currentTime + .8 / cfg.speed);
+          g.gain.setValueAtTime((0.06 - i * .015) * this.vol, c.currentTime + 2.5 / cfg.speed);
+          g.gain.linearRampToValueAtTime(0.001, c.currentTime + 3.8 / cfg.speed);
+          o.connect(g); g.connect(c.destination); o.start(c.currentTime); o.stop(c.currentTime + 4 / cfg.speed);
+        });
+      },
+      playFanfare() {
+        if (!this._ok('fanfare')) return; if (this._playCustom('fanfare')) return; this._ensure();
+        const cfg = this._sc('fanfare');
+        const notes = [{ f: 523, d: 0.14 }, { f: 659, d: 0.14 }, { f: 784, d: 0.14 }, { f: 988, d: 0.14 }, { f: 1047, d: 0.45 }];
+        notes.forEach((n, i) => setTimeout(() => {
+          this._tone('fanfare', { f: n.f, d: n.d, type: 'square', v: 0.52, a: 0.01, dec: 0.04, sus: 0.5, rel: 0.08 });
+          this._tone('fanfare', { f: n.f * 1.5, d: n.d * .75, v: 0.18, a: 0.02, dec: 0.03, sus: 0.3, rel: 0.06 });
+        }, i * 120 / cfg.speed));
+        setTimeout(() => [523.25, 659.25, 783.99, 1046.5, 1318.51].forEach(f => this._tone('fanfare', { f, d: 1.0, v: 0.3, a: 0.01, dec: 0.1, sus: 0.5, rel: 0.3 })), notes.length * 120 / cfg.speed + 80);
+      },
+      playFlare() { if (!this._ok('flare')) return; if (this._playCustom('flare')) return; const cfg = this._sc('flare');[180, 360, 540, 720].forEach((f, i) => setTimeout(() => this._tone('flare', { f, d: 0.35, v: 0.28, a: 0.01, dec: 0.06, sus: 0.3, rel: 0.14 }), i * 45 / cfg.speed)); },
+      playTyping() { if (!this._ok('typing')) return; if (this._playCustom('typing')) return; this._tone('typing', { f: 1300 + Math.random() * 300, d: 0.04, type: 'square', v: 0.16, a: 0.002, dec: 0.01, sus: 0.1, rel: 0.02 }); },
+      playDivider() { if (!this._ok('divider')) return; if (this._playCustom('divider')) return; const cfg = this._sc('divider');[400, 600, 800].forEach((f, i) => setTimeout(() => this._tone('divider', { f, d: 0.15, v: 0.2, a: 0.01, dec: 0.05, sus: 0.2, rel: 0.08 }), i * 50 / cfg.speed)); },
+      playTagline() { if (!this._ok('tagline')) return; if (this._playCustom('tagline')) return; this._tone('tagline', { f: 660, d: 0.3, v: 0.2, a: 0.04, dec: 0.1, sus: 0.3, rel: 0.15 }); },
+      playSweepOut() { if (!this._ok('sweepOut')) return; if (this._playCustom('sweepOut')) return; const cfg = this._sc('sweepOut');[1047, 784, 523, 262].forEach((f, i) => setTimeout(() => this._tone('sweepOut', { f, d: 0.18, type: 'square', v: 0.38, a: 0.005, dec: 0.05, sus: 0.3, rel: 0.08 }), i * 75 / cfg.speed)); },
+      playGameStart() {
+        if (!this._ok('gameStart')) return; if (this._playCustom('gameStart')) return;
+        const cfg = this._sc('gameStart');
+        [0, 100, 200, 300, 500].forEach((delay, i) => {
+          const fr = [523.25, 659.25, 783.99, 1046.5, 1318.51], tp = ['square', 'square', 'square', 'square', 'sawtooth'], vl = [.5, .5, .5, .6, .4], dl = [.15, .15, .15, .4, .6];
+          setTimeout(() => this._tone('gameStart', { f: fr[i], d: dl[i], type: tp[i], v: vl[i] }), delay / cfg.speed);
+        });
+      },
+      playSectionIntro() {
+        if (!this._ok('sectionIntro')) return; if (this._playCustom('sectionIntro')) return;
+        const cfg = this._sc('sectionIntro');
+        this._chord('sectionIntro', [523.25, 659.25, 783.99], .5, .5);
+        setTimeout(() => this._chord('sectionIntro', [659.25, 783.99, 1046.5], .4, .4), 200 / cfg.speed);
+        setTimeout(() => this._chord('sectionIntro', [783.99, 987.77, 1318.51], .6, .5), 400 / cfg.speed);
+      },
+      playRoundStart() {
+        if (!this._ok('roundStart')) return; if (this._playCustom('roundStart')) return;
+        const cfg = this._sc('roundStart');
+        setTimeout(() => this._tone('roundStart', { f: 440, d: .08, type: 'square', v: .4 }), 0);
+        setTimeout(() => this._tone('roundStart', { f: 440, d: .08, type: 'square', v: .4 }), 100 / cfg.speed);
+        setTimeout(() => this._tone('roundStart', { f: 880, d: .3, type: 'square', v: .5 }), 200 / cfg.speed);
+      },
+      playFrameIn() {
+        if (!this._ok('frameIn')) return; if (this._playCustom('frameIn')) return; this._ensure();
+        const c = this.ctx, cfg = this._sc('frameIn');
+        const o = c.createOscillator(), g = c.createGain();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(120 * cfg.pitch, c.currentTime);
+        o.frequency.exponentialRampToValueAtTime(480 * cfg.pitch, c.currentTime + .35 / cfg.speed);
+        g.gain.setValueAtTime(0, c.currentTime); g.gain.linearRampToValueAtTime(.28 * this.vol, c.currentTime + .04 / cfg.speed); g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + .38 / cfg.speed);
+        o.connect(g); g.connect(c.destination); o.start(c.currentTime); o.stop(c.currentTime + .42 / cfg.speed);
+      },
+      playDialogueIn() {
+        if (!this._ok('dialogueIn')) return; if (this._playCustom('dialogueIn')) return; this._ensure();
+        this._tone('dialogueIn', { f: 600 + Math.random() * 200, d: 0.06, type: 'triangle', v: 0.15, a: 0.002, dec: 0.02, sus: 0.1, rel: 0.03 });
+      },
+      playTick() { if (!this._ok('tick')) return; if (this._playCustom('tick')) return; this._tone('tick', { f: 2000, d: 0.03, v: 0.2, a: 0.001, dec: 0.01, sus: 0.1, rel: 0.01 }); },
+      playTickWarn() { if (!this._ok('tickWarn')) return; if (this._playCustom('tickWarn')) return; this._tone('tickWarn', { f: 1200, d: 0.08, type: 'square', v: 0.4, a: 0.005, dec: 0.02, sus: 0.1, rel: 0.05 }); },
+      playReveal() { if (!this._ok('reveal')) return; if (this._playCustom('reveal')) return; this._chord('reveal', [523.25, 659.25, 783.99, 1046.5], .5, .4); },
+      playScoring() {
+        if (!this._ok('scoring')) return; if (this._playCustom('scoring')) return;
+        const cfg = this._sc('scoring');
+        this._chord('scoring', [440, 554.37, 659.25], .2, .3);
+        setTimeout(() => this._chord('scoring', [523.25, 659.25, 783.99], .3, .4), 150 / cfg.speed);
+      },
+      playSelPlayer() {
+        if (!this._ok('selPlayer')) return; if (this._playCustom('selPlayer')) return;
+        const cfg = this._sc('selPlayer');
+        setTimeout(() => this._tone('selPlayer', { f: 880, d: .08, type: 'square', v: .4 }), 0);
+        setTimeout(() => this._tone('selPlayer', { f: 1108.73, d: .08, type: 'square', v: .4 }), 50 / cfg.speed);
+        setTimeout(() => this._tone('selPlayer', { f: 1318.51, d: .3, type: 'square', v: .5 }), 100 / cfg.speed);
+        setTimeout(() => this._tone('selPlayer', { f: 1760, d: .4, v: .4 }), 200 / cfg.speed);
+      },
+      playSkip() { if (!this._ok('skip')) return; if (this._playCustom('skip')) return; this._tone('skip', { f: 300, d: .3, type: 'sawtooth', v: .3, a: .05, dec: .1, sus: .2, rel: .15 }); },
+      playTransition() {
+        if (!this._ok('transition')) return; if (this._playCustom('transition')) return;
+        const cfg = this._sc('transition');
+        this._chord('transition', [659.25, 783.99], .15, .3);
+        setTimeout(() => this._chord('transition', [523.25, 659.25], .15, .3), 100 / cfg.speed);
+      },
+      playWinner() {
+        if (!this._ok('winner')) return; if (this._playCustom('winner')) return;
+        const cfg = this._sc('winner');
+        const f = [523.25, 659.25, 783.99, 1046.5, 1318.51, 1567.98, 2093];
+        f.forEach((freq, i) => setTimeout(() => this._tone('winner', { f: freq, d: .3, type: 'square', v: .5, a: .02, dec: .05, sus: .4, rel: .1 }), i * 150 / cfg.speed));
+        setTimeout(() => this._chord('winner', [1046.5, 1318.51, 1567.98, 2093], 1.5, .4), 1100 / cfg.speed);
+      },
+      playPop() { if (!this._ok('pop')) return; if (this._playCustom('pop')) return; this._tone('pop', { f: 800 + Math.random() * 400, d: .1, v: .2, a: .005, dec: .02, sus: .1, rel: .05 }); },
+      toggleMute() {
+        this.muted = !this.muted;
+        if (this.muted) this._stopCurrent(); // stop custom audio immediately on mute
+        const b = document.getElementById('sndBtn');
+        b.textContent = this.muted ? '🔇' : '🔊';
+        b.classList.toggle('muted', this.muted);
+        if (!this.muted) this.init();
+      },
+      setVolume(v) { this.vol = Math.max(0, Math.min(1, v)); },
+      resetSounds() {
+        this._stopCurrent();       // stop any playing custom audio
+        this._lastPlayed = {};     // clear no-repeat history
+        this.soundConfig = {};     // reset all per-sound configs
+      }
+    };
+    document.addEventListener('click', () => SoundManager.init(), { once: true });
+
+    /* ═══ CINEMATIC INTRO ═══ */
+    const CinematicIntro = {
+      _ids: [], _skipped: false, _done: false,
+      _t(ms, fn) { const id = setTimeout(fn, ms); this._ids.push(id); return id; },
+      _clear() { this._ids.forEach(clearTimeout); this._ids = []; },
+      _spawnParticles() {
+        const box = document.getElementById('ciParticles'); box.innerHTML = '';
+        const cols = ['#ff2e92', '#00d4ff', '#b347ea', '#ffd700', '#4ade80', '#fff', '#ffaa00'];
+        for (let i = 0; i < 50; i++) {
+          const el = document.createElement('div'); el.className = 'ci-particle';
+          const sz = 3 + Math.random() * 7;
+          el.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random() * 100}%;background:${cols[i % cols.length]};animation-duration:${5 + Math.random() * 7}s;animation-delay:${Math.random() * 3}s;`;
+          box.appendChild(el);
+        }
+      },
+      _showNum(n) { const el = document.getElementById('ciCountNum'); el.textContent = n === 0 ? 'GO!' : String(n); el.classList.remove('hide'); void el.offsetWidth; el.classList.add('show'); },
+      _hideNum() { const el = document.getElementById('ciCountNum'); el.classList.remove('show'); el.classList.add('hide'); },
+      _typeSubtitle(fullText, charDelay, onDone) {
+        const el = document.getElementById('ciSub'); el.textContent = ''; el.style.width = '0px'; el.style.borderRightColor = '#00d4ff';
+        let i = 0;
+        const type = () => {
+          if (this._skipped) { el.textContent = fullText; el.style.width = 'none'; el.style.maxWidth = '100%'; el.style.overflow = 'visible'; el.classList.add('done'); if (onDone) onDone(); return; }
+          if (i < fullText.length) { i++; el.textContent = fullText.slice(0, i); el.style.width = 'auto'; const w = el.scrollWidth; el.style.width = w + 'px'; SoundManager.playTyping(); this._t(charDelay, type); }
+          else { this._t(1200, () => { el.classList.add('done'); if (onDone) onDone(); }); }
+        };
+        this._t(80, type);
+      },
+      _launch() {
+        if (this._done) return; this._done = true; this._clear();
+        document.getElementById('ciFilmTop').classList.remove('on');
+        document.getElementById('ciFilmBot').classList.remove('on');
+        document.getElementById('ciParticles').innerHTML = '';
+        document.getElementById('ciSkip').classList.remove('on');
+        GameController.startGame();
+      },
+      skip() {
+        if (this._skipped) return; this._skipped = true; SoundManager.playClick();
+        const logo = document.getElementById('ciLogo'); logo.className = 'ci-logo dismiss'; SoundManager.playSweepOut();
+        const fl = document.getElementById('screenFlash'); fl.classList.remove('go'); void fl.offsetWidth; fl.classList.add('go');
+        setTimeout(() => this._launch(), 520);
+      },
+      play() {
+        SoundManager.init(); SoundManager.playClick();
+        this._clear(); this._skipped = false; this._done = false;
+        UI.showScreen('cinematicIntroScreen'); this._run();
+      },
+      _run() {
+        const logo = document.getElementById('ciLogo'), sub = document.getElementById('ciSub'), div = document.getElementById('ciDivider'), tag = document.getElementById('ciTagline'), flareO = document.getElementById('ciFlareOuter'), flareI = document.getElementById('ciFlareInner'), prog = document.getElementById('ciProgress'), fill = document.getElementById('ciProgressFill'), numEl = document.getElementById('ciCountNum'), skip = document.getElementById('ciSkip'), blobs = ['ciBlob1', 'ciBlob2', 'ciBlob3'].map(id => document.getElementById(id));
+        logo.className = 'ci-logo'; sub.className = 'ci-sub'; sub.textContent = ''; sub.style.width = '0px'; sub.style.borderRightColor = '#00d4ff'; tag.classList.remove('on'); div.classList.remove('expand'); flareO.className = 'ci-flare outer'; flareI.className = 'ci-flare inner'; prog.classList.remove('on'); fill.style.transition = 'none'; fill.style.width = '0%'; numEl.classList.remove('show', 'hide'); skip.classList.remove('on'); blobs.forEach(b => b.classList.remove('on'));
+        this._spawnParticles();
+        document.getElementById('ciFilmTop').classList.add('on');
+        document.getElementById('ciFilmBot').classList.add('on');
+        this._t(0, () => { SoundManager.playHum(); SoundManager.playWhoosh(); });
+        this._t(300, () => blobs.forEach(b => b.classList.add('on')));
+        this._t(600, () => { this._showNum(3); SoundManager.playCountBeep(3); });
+        this._t(1400, () => this._hideNum());
+        this._t(1600, () => { this._showNum(2); SoundManager.playCountBeep(2); });
+        this._t(2400, () => this._hideNum());
+        this._t(2600, () => { this._showNum(1); SoundManager.playCountBeep(1); });
+        this._t(3400, () => this._hideNum());
+        this._t(3600, () => { this._showNum(0); SoundManager.playCountBeep(0); SoundManager.playFlare(); });
+        this._t(3960, () => { this._hideNum(); flareO.className = 'ci-flare outer pulse'; this._t(200, () => { flareI.className = 'ci-flare inner spin'; }); });
+        this._t(4000, () => { logo.className = 'ci-logo reveal'; SoundManager.playFanfare(); });
+        this._t(4300, () => skip.classList.add('on'));
+        this._t(4400, () => { prog.classList.add('on'); void fill.offsetWidth; fill.style.transition = 'width 3700ms linear'; fill.style.width = '100%'; });
+        this._t(4500, () => { div.classList.add('expand'); SoundManager.playDivider(); });
+        this._t(4750, () => this._typeSubtitle('GUESS THE FRAME', 95, () => { }));
+        this._t(6300, () => { tag.classList.add('on'); SoundManager.playTagline(); });
+        this._t(7200, () => { logo.className = 'ci-logo dismiss'; SoundManager.playSweepOut(); });
+        this._t(7700, () => { const fl = document.getElementById('screenFlash'); fl.classList.remove('go'); void fl.offsetWidth; fl.classList.add('go'); });
+        this._t(8100, () => this._launch());
+      }
+    };
+
+    /* ═══ GAME STATE ═══ */
+    const GS = {
+      PHASES: { IDLE: 'IDLE', ROUND_ACTIVE: 'ROUND_ACTIVE', JUDGE_PHASE: 'JUDGE_PHASE', ANSWER_REVEAL: 'ANSWER_REVEAL', SCORING_PHASE: 'SCORING_PHASE', ROUND_TRANSITION: 'ROUND_TRANSITION', WINNER_SCREEN: 'WINNER_SCREEN' },
+      currentPhase: 'IDLE',
+      sections: [
+        {
+          id: 1, name: 'Indian Movies', icon: '🎬', collapsed: false, frames: [
+            { type: 'image', content: 'https://okhrchqndxbrasfghueh.supabase.co/storage/v1/object/public/frames/AK%20Ayyappanum%20Koshiyum%20(2020).jpg', answer: 'AK AYYAPPANUM KOSHIYUM', year: '2020' },
+            { type: 'image', content: 'https://okhrchqndxbrasfghueh.supabase.co/storage/v1/object/public/frames/Akaash%20Vani%20(2013).jpeg', answer: 'AKAASH VANI', year: '2013' },
+            { type: 'image', content: 'https://okhrchqndxbrasfghueh.supabase.co/storage/v1/object/public/frames/Chatha%20Pacha%20The%20Ring%20of%20Rowdie.png', answer: 'CHATHA PACHA THE RING OF ROWDIE', year: '2026' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/dude%202025.png', answer: 'DUDE', year: '2025' },
+            { type: 'image', content: 'https://okhrchqndxbrasfghueh.supabase.co/storage/v1/object/public/frames/Joji%20(2021).jpg', answer: 'JOJI', year: '2021' },
+            { type: 'image', content: 'https://okhrchqndxbrasfghueh.supabase.co/storage/v1/object/public/frames/Lokah%20Chapter%201%20(2025).jpg', answer: 'LOKAH CHAPTER 1', year: '2025' },
+            { type: 'image', content: 'https://okhrchqndxbrasfghueh.supabase.co/storage/v1/object/public/frames/Masaan%20(2015).jpg', answer: 'MASAAN', year: '2015' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/the%20hero.png', answer: 'THE HERO', year: '1966' },
+            { type: 'image', content: 'https://okhrchqndxbrasfghueh.supabase.co/storage/v1/object/public/frames/ROCKETRY%20(2022).png', answer: 'ROCKETRY', year: '2022' },
+            { type: 'image', content: 'https://okhrchqndxbrasfghueh.supabase.co/storage/v1/object/public/frames/Selfiee%20(2023).jpg', answer: 'SELFIEE', year: '2023' },
+            { type: 'image', content: 'https://okhrchqndxbrasfghueh.supabase.co/storage/v1/object/public/frames/Talvar%20(2015).jpg', answer: 'TALVAR', year: '2015' },
+            { type: 'image', content: 'https://okhrchqndxbrasfghueh.supabase.co/storage/v1/object/public/frames/The%20Lunchbox%20(2013).jpeg', answer: 'THE LUNCHBOX', year: '2013' },
+            { type: 'image', content: 'https://okhrchqndxbrasfghueh.supabase.co/storage/v1/object/public/frames/Trapped%20(2016).jpg', answer: 'TRAPPED', year: '2016' },
+            { type: 'image', content: 'https://okhrchqndxbrasfghueh.supabase.co/storage/v1/object/public/frames/Udaan%20(2010).jpg', answer: 'UDAAN', year: '2010' },
+            { type: 'image', content: 'https://okhrchqndxbrasfghueh.supabase.co/storage/v1/object/public/frames/Viduthalai%20Part%201%20(2023).jpg', answer: 'VIDUTHALAI PART 1', year: '2023' }
+          ]
+        },
+        {
+          id: 2, name: 'International Movies', icon: '🎥', collapsed: false, frames: [
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/Burn%20After%20Reading%20(2008).jpg', answer: 'BURN AFTER READING ', year: '2008' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/Come%20and%20See%20(1985).png', answer: 'COME AND SEE', year: '1985' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/Dallas%20Buyers%20Club%20(2013).png', answer: 'DALLAS BUYERS CLUB ', year: '2013' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/hamnet%20(2026).png', answer: 'HAMNET ', year: '2026' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/Into%20the%20Wild%20(2007).jpg', answer: 'INTO THE WILD', year: '2007' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/Kingdom%20of%20Heaven%20(2005).jpg', answer: 'KINGDOM OF HEAVEN ', year: '2005' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/predator%20badland%2020025.png', answer: 'PREDATOR: BADLANDS ', year: '2025' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/The%20Godfather%20(1972).jpg', answer: 'THE GODFATHER', year: '1972' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/The%20Good%20the%20Bad%20and%20the%20Ugly%20(1966).png', answer: 'THE GOOD THE BAD THE UGLY', year: '1966' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/The%20Usual%20Suspects%20(1995).png', answer: 'THE USUAL SUSPECTS ', year: '1995' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/Unforgiven%20(1992).jpg', answer: 'UNFORGIVEN', year: '1992' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/Vanilla%20Sky%20(2001).png', answer: 'VANILLA SKY ', year: '2001' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/watchmen%20%20(2009).png', answer: 'WATCHMEN', year: '2009' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/Sentimental%20Value%20(2025).jpg', answer: 'SENTIMENTAL VALUE', year: '2025' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/CASINO%20ROYALE%20(3).png', answer: 'CASINO ROYALE', year: '2006' }
+          ]
+        },
+        {
+          id: 3, name: 'Guess the Dialogue', icon: '💭', collapsed: false, frames: [
+            { type: 'dialogue', dialogue: 'Mogambo khush hua!', answer: 'MR. INDIA', year: '1987', context: 'Famous villain catchphrase' },
+            { type: 'dialogue', dialogue: 'Kitne aadmi the?', answer: 'SHOLAY', year: '1975', context: 'Iconic dacoit question' },
+            { type: 'dialogue', dialogue: 'Rahul, naam toh suna hoga', answer: 'DIL TOH PAGAL HAI', year: '1997', context: 'Classic romance line' },
+            { type: 'dialogue', dialogue: 'Bade bade deshon mein aisi chhoti chhoti baatein hoti rehti hain', answer: 'DDLJ', year: '1995', context: 'Train scene dialogue' },
+            { type: 'dialogue', dialogue: 'Picture abhi baaki hai mere dost', answer: 'OM SHANTI OM', year: '2007', context: 'Supertar comeback line' },
+            { type: 'dialogue', dialogue: 'How\'s the josh?', answer: 'URI', year: '2019', context: 'Army motivational dialogue' },
+            { type: 'dialogue', dialogue: 'I\'ll be back', answer: 'THE TERMINATOR', year: '1984', context: 'Arnold Schwarzenegger classic' },
+            { type: 'dialogue', dialogue: 'May the Force be with you', answer: 'STAR WARS', year: '1977', context: 'Jedi blessing' },
+            { type: 'dialogue', dialogue: 'Why so serious?', answer: 'THE DARK KNIGHT', year: '2008', context: 'Joker\'s infamous line' },
+            { type: 'dialogue', dialogue: 'I see dead people', answer: 'THE SIXTH SENSE', year: '1999', context: 'Spoiler alert scene' },
+            { type: 'dialogue', dialogue: 'Houston, we have a problem', answer: 'APOLLO 13', year: '1995', context: 'Space crisis communication' },
+            { type: 'dialogue', dialogue: 'Life is like a box of chocolates', answer: 'FORREST GUMP', year: '1994', context: 'Bench philosophical moment' }
+          ]
+        }
+      ],
+      players: [
+        { name: 'AYUSH', score: 0, avatar: '🦁' }, { name: 'AYANK', score: 0, avatar: '🐲' }, { name: 'RUHAAN', score: 0, avatar: '🦊' },
+        { name: 'JOEL', score: 0, avatar: '🐻' }, { name: 'PRAAGYA', score: 0, avatar: '🦄' }
+      ],
+      judge: { totalRounds: 0, totalPlayers: 0, roundsPerJudge: 1, globalRoundIndex: 0, currentJudge: null, currentJudgeIndex: -1, currentJudgeRoundsServed: 0, usedJudges: [], cycleCount: 0, judgeAnswered: false, judgeRewardGiven: false },
+      scoring: { locked: false, completed: false },
+      roundSkipped: false,
+      currentSection: 0, currentSectionRound: 0,
+      settings: {
+        timerDuration: 30, judgePhaseDuration: 5, answerRevealDuration: 2, pointsPerAnswer: 10, judgePoints: 20, creatorMessage: 'website by asmit and frames by tanmayy, Tanuj, Darshan, Sameer, Akash, Anmol, Himanshu and Devansh.',
+
+      },
+      activeTimerId: null, timeRemaining: 0, nextSectionId: 4,
+      imageCache: new Map(),
+      currentFrameLoader: null
+    };
+
+    const sectionIcons = ['🎬', '🎥', '💭', '📺', '🎭', '🎪', '🎨', '🎮', '🎯', '🎸', '🎺'];
+    const taglines = ['Get Ready!', 'Here We Go!', 'Eyes on Screen!', 'Think Fast!', 'Can You Guess?'];
+
+    /* ═══ STATE MACHINE ═══ */
+    const SM = {
+      get() { return GS.currentPhase; },
+      set(p) {
+        GS.currentPhase = p;
+        const ind = document.getElementById('stateInd');
+        if (ind) { ind.textContent = p.replace(/_/g, ' '); ind.className = 'state-ind ' + p.toLowerCase().replace(/_/g, '-'); }
+        const jb = document.getElementById('judgeBadge');
+        if (jb) jb.classList.toggle('jp', p === GS.PHASES.JUDGE_PHASE);
+        const tl = document.getElementById('timerLbl');
+        if (tl) { tl.classList.toggle('jp', p === GS.PHASES.JUDGE_PHASE); tl.classList.toggle('sp', p === GS.PHASES.SCORING_PHASE); }
+      },
+      is(p) { return GS.currentPhase === p; }
+    };
+
+    /* ═══ TIMER ═══ */
+    const TC = {
+      clear() { if (GS.activeTimerId !== null) { clearInterval(GS.activeTimerId); GS.activeTimerId = null; } },
+      startMain(cb) {
+        this.clear(); GS.timeRemaining = GS.settings.timerDuration;
+        const C = 2 * Math.PI * 42;
+        const tp = document.getElementById('timerProg'), tt = document.getElementById('timerTxt'), tc = document.getElementById('timerCircle'), tl = document.getElementById('timerLbl');
+        tp.style.strokeDasharray = C; tp.style.strokeDashoffset = 0; tp.style.stroke = '#4ade80';
+        tt.textContent = GS.settings.timerDuration; tl.textContent = 'Time Remaining'; tc.classList.remove('t-pulse');
+        let last = GS.settings.timerDuration;
+        GS.activeTimerId = setInterval(() => {
+          GS.timeRemaining--;
+          tt.textContent = Math.max(0, GS.timeRemaining);
+          tp.style.strokeDashoffset = C * (1 - GS.timeRemaining / GS.settings.timerDuration);
+          if (GS.timeRemaining < last && GS.timeRemaining > 0) { GS.timeRemaining <= 5 ? SoundManager.playTickWarn() : SoundManager.playTick(); last = GS.timeRemaining; }
+          if (GS.timeRemaining > GS.settings.timerDuration * .5) tp.style.stroke = '#4ade80';
+          else if (GS.timeRemaining > GS.settings.timerDuration * .2) tp.style.stroke = '#fbbf24';
+          else { tp.style.stroke = '#ef4444'; tc.classList.add('t-pulse'); }
+          if (GS.timeRemaining <= 0) { this.clear(); tc.classList.remove('t-pulse'); if (cb) cb(); }
+        }, 1000);
+      },
+      startJudge(cb) {
+        this.clear(); GS.timeRemaining = GS.settings.judgePhaseDuration;
+        const C = 2 * Math.PI * 42;
+        const tp = document.getElementById('timerProg'), tt = document.getElementById('timerTxt'), tc = document.getElementById('timerCircle');
+        tp.style.strokeDasharray = C; tp.style.strokeDashoffset = 0; tp.style.stroke = '#ffd700';
+        tt.textContent = GS.settings.judgePhaseDuration;
+        GS.activeTimerId = setInterval(() => {
+          GS.timeRemaining--;
+          tt.textContent = Math.max(0, GS.timeRemaining);
+          tp.style.strokeDashoffset = C * (1 - GS.timeRemaining / GS.settings.judgePhaseDuration);
+          if (GS.timeRemaining <= 2) { tp.style.stroke = '#ef4444'; tc.classList.add('t-pulse'); }
+          if (GS.timeRemaining <= 0) { this.clear(); tc.classList.remove('t-pulse'); if (cb) cb(); }
+        }, 1000);
+      }
+    };
+
+    /* ═══ SCORES ═══ */
+    const Scores = {
+      add(idx, pts) {
+        if (idx < 0 || idx >= GS.players.length) return null;
+        const p = GS.players[idx]; p.score = Math.max(0, p.score + pts); UI.renderLB(); return pts;
+      },
+      popup(idx, pts) {
+        const sorted = [...GS.players].sort((a, b) => b.score - a.score);
+        const p = GS.players[idx]; const si = sorted.findIndex(x => x.name === p.name);
+        const items = document.querySelectorAll('.lb-item');
+        if (si >= 0 && items[si]) { const sc = items[si].querySelector('.score'); const el = document.createElement('span'); el.className = 'score-pop'; el.textContent = `+${pts}`; sc.style.position = 'relative'; sc.appendChild(el); setTimeout(() => el.remove(), 1000); }
+      }
+    };
+
+    /* ═══ JUDGES ═══ */
+    const Judges = {
+      calcTotal() { return GS.sections.reduce((s, sec) => s + sec.frames.filter(f => f.content && f.answer || (f.type === 'dialogue' && f.dialogue && f.answer)).length, 0); },
+      init() {
+        const j = GS.judge;
+        j.totalRounds = this.calcTotal(); j.totalPlayers = GS.players.length;
+        j.roundsPerJudge = j.totalPlayers > 0 ? Math.max(1, Math.floor(j.totalRounds / j.totalPlayers)) : 1;
+        j.globalRoundIndex = 0; j.currentJudge = null; j.currentJudgeIndex = -1;
+        j.currentJudgeRoundsServed = 0; j.usedJudges = []; j.cycleCount = 0;
+        this.clearFlags();
+      },
+      clearFlags() { GS.judge.judgeAnswered = false; GS.judge.judgeRewardGiven = false; },
+      needNew() { const j = GS.judge; if (j.currentJudge === null) return true; if (j.totalPlayers <= 1) return false; return j.currentJudgeRoundsServed >= j.roundsPerJudge; },
+      eligible() { const j = GS.judge; let e = GS.players.filter(p => !j.usedJudges.includes(p.name)); if (!e.length) { j.usedJudges = []; j.cycleCount++; e = [...GS.players]; } return e; },
+      selectNew() {
+        const j = GS.judge;
+        if (j.totalPlayers <= 1) { const p = GS.players[0]; j.currentJudge = p ? p.name : null; j.currentJudgeIndex = 0; j.currentJudgeRoundsServed = 0; return p; }
+        const e = this.eligible(); const s = e[Math.floor(Math.random() * e.length)];
+        j.currentJudge = s.name; j.currentJudgeIndex = GS.players.findIndex(p => p.name === s.name); j.usedJudges.push(s.name); j.currentJudgeRoundsServed = 0; return s;
+      },
+      incRound() { GS.judge.globalRoundIndex++; GS.judge.currentJudgeRoundsServed++; },
+      remaining() { const j = GS.judge; return Math.max(0, j.roundsPerJudge - j.currentJudgeRoundsServed); },
+      updateDisplay() {
+        const j = GS.judge;
+        const n = document.getElementById('curJudge'), r = document.getElementById('judgeRoundsLeft');
+        if (n) n.textContent = j.currentJudge || '-';
+        if (r) { const rem = this.remaining(); r.textContent = rem === 1 ? '1 left' : `${rem} left`; }
+      },
+      showAnim(cb) {
+        const j = GS.judge, ov = document.getElementById('judgeOv'), cont = document.getElementById('joCandidates'), sel = document.getElementById('joSelMsg');
+        sel.classList.remove('on');
+        const sr = document.getElementById('joServeRounds'); if (sr) sr.textContent = j.roundsPerJudge;
+        cont.innerHTML = GS.players.map(p => { const was = j.usedJudges.includes(p.name) && p.name !== j.currentJudge; const av = p.avatar || ''; return `<div class="jo-cand ${was ? 'was' : ''}" data-name="${p.name}"><div class="c-avatar">${av}</div><div class="cname">${p.name}</div><div class="cstat">${was ? 'served' : 'eligible'}</div></div>`; }).join('');
+        ov.classList.add('on'); SoundManager.playClick();
+        const chosen = this.selectNew();
+        const cands = cont.querySelectorAll('.jo-cand:not(.was)'), all = cont.querySelectorAll('.jo-cand');
+        if (!cands.length) { document.getElementById('joSelName').textContent = chosen.name; sel.classList.add('on'); this.updateDisplay(); setTimeout(() => { ov.classList.remove('on'); if (cb) cb(); }, 1500); return; }
+        let cur = 0, iters = 0; const max = 20 + Math.floor(Math.random() * 10);
+        const iv = setInterval(() => {
+          all.forEach(c => c.classList.remove('hl', 'sel'));
+          if (cands[cur]) cands[cur].classList.add('hl'); if (iters % 2 === 0) SoundManager.playClick();
+          cur = (cur + 1) % cands.length; iters++;
+          if (iters >= max) { clearInterval(iv); all.forEach(c => c.classList.remove('hl')); const el = cont.querySelector(`[data-name="${chosen.name}"]`); if (el) el.classList.add('sel'); document.getElementById('joSelName').textContent = chosen.name; SoundManager.playSelPlayer(); setTimeout(() => sel.classList.add('on'), 300); this.updateDisplay(); setTimeout(() => { ov.classList.remove('on'); if (cb) cb(); }, 2000); }
+        }, 80 + Math.min(iters * 3, 100));
+      },
+      process(cb) { if (this.needNew()) this.showAnim(cb); else { this.updateDisplay(); if (cb) cb(); } }
+    };
+
+    /* ═══ UI ═══ */
+    const UI = {
+      showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); const el = document.getElementById(id); if (el) el.classList.add('active'); },
+      renderLB() {
+        const c = document.getElementById('leaderboard'); if (!c) return;
+        const sorted = [...GS.players].sort((a, b) => b.score - a.score);
+        const cj = GS.judge.currentJudge, isJP = SM.is(GS.PHASES.JUDGE_PHASE);
+        c.innerHTML = sorted.map((p, i) => { const isJ = p.name === cj, ja = isJ && isJP; const av = p.avatar ? `<span class="lb-avatar">${p.avatar}</span>` : ''; return `<div class="lb-item ${i === 0 && p.score > 0 ? 'top' : ''} ${isJ ? 'is-j' : ''} ${ja ? 'j-act' : ''}"><span class="rank">${i + 1}</span><span class="name">${av}${p.name} ${isJ ? '👨‍⚖️' : ''}</span><span class="score">${p.score}</span></div>`; }).join('');
+      },
+      renderScoring() {
+        const c = document.getElementById('scoringGrid'); if (!c) return;
+        const cj = GS.judge.currentJudge;
+        c.innerHTML = GS.players.map((p, i) => { const isJ = p.name === cj; const pts = isJ ? GS.settings.judgePoints : GS.settings.pointsPerAnswer; const av = p.avatar || ''; return `<button class="spbtn ${isJ ? 'is-j' : ''}" onclick="GameController.scoringClick(${i})" data-pi="${i}"><span class="sp-avatar">${av}</span><span>${p.name}</span><span class="ptsl">+${pts} pts</span></button>`; }).join('');
+      },
+      disableScoring() { document.querySelectorAll('.spbtn').forEach(b => b.disabled = true); },
+      markSelected(idx) { const b = document.querySelector(`.spbtn[data-pi="${idx}"]`); if (b) { b.classList.add('sel'); b.disabled = true; } },
+      showScoringOv(v) { const o = document.getElementById('scoringOv'); if (!o) return; o.classList.toggle('on', v); if (v) { this.renderScoring(); document.getElementById('lockedInd').classList.remove('on'); document.getElementById('skippedInd').classList.remove('on'); } },
+      showNonk(v) { const p = document.getElementById('nonkPanel'); if (!p) return; p.classList.toggle('on', v); if (v) { document.getElementById('nonkBtn').disabled = false; document.getElementById('skipMsgEl').classList.remove('on'); } },
+      showLocked() { const e = document.getElementById('lockedInd'); if (e) e.classList.add('on'); },
+      showSkipped() { const e = document.getElementById('skippedInd'); if (e) e.classList.add('on'); },
+      renderFinalLB() { const c = document.getElementById('finalLB'); if (!c) return; const s = [...GS.players].sort((a, b) => b.score - a.score); c.innerHTML = s.map((p, i) => { const av = p.avatar ? `<span class="lb-avatar">${p.avatar}</span>` : ''; return `<div class="lb-item ${i === 0 ? 'top' : ''}"><span class="rank">${i + 1}</span><span class="name">${av}${p.name}</span><span class="score">${p.score}</span></div>`; }).join(''); }
+    };
+
+    /* ═══ FRAME DISPLAY with smooth transitions ═══ */
+    const FrameDisplay = {
+      _currentFrame: null,
+      _currentImage: null,
+      _loadingImage: null,
+
+      /* Preload and cache images */
+      preloadImage(src) {
+        if (GS.imageCache.has(src)) return Promise.resolve(GS.imageCache.get(src));
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => { GS.imageCache.set(src, img); resolve(img); };
+          img.onerror = reject;
+          img.src = src;
+        });
+      },
+
+      /* Preload next few frames */
+      async preloadUpcoming() {
+        let count = 0;
+        for (let s = GS.currentSection; s < GS.sections.length && count < 3; s++) {
+          const sec = GS.sections[s];
+          const startRound = (s === GS.currentSection) ? GS.currentSectionRound + 1 : 0;
+          const valid = sec.frames.filter(f => f.type !== 'dialogue' && f.content && f.answer);
+          for (let r = startRound; r < valid.length && count < 3; r++) {
+            const frame = valid[r];
+            if (frame.content) this.preloadImage(frame.content).catch(() => { });
+            count++;
+          }
+        }
+      },
+
+      /* Reset display */
+      reset() {
+        const ph = document.getElementById('framePlaceholder');
+        const layer = document.getElementById('frameLayer');
+        const dialogue = document.getElementById('frameDialogue');
+        const imageContainer = document.getElementById('imageContainer');
+        const ansOv = document.getElementById('answerOverlay');
+
+        layer.innerHTML = '';
+        layer.classList.remove('blurred');
+        layer.style.opacity = '0';
+
+        dialogue.classList.remove('visible');
+        imageContainer.innerHTML = '';
+
+        ansOv.classList.remove('visible');
+        if (ph) ph.classList.remove('hidden');
+
+        this._currentImage = null;
+        if (GS.currentFrameLoader) GS.currentFrameLoader = null;
+      },
+
+      /* Show a frame with smooth loading */
+      async showFrame(f) {
+        this._currentFrame = f;
+        GS.currentFrameLoader = f;
+
+        const ph = document.getElementById('framePlaceholder');
+        const layer = document.getElementById('frameLayer');
+        const dialogue = document.getElementById('frameDialogue');
+        const imageContainer = document.getElementById('imageContainer');
+        const ansOv = document.getElementById('answerOverlay');
+
+        // Hide answer overlay
+        ansOv.classList.remove('visible');
+
+        // Handle dialogue type
+        if (f.type === 'dialogue') {
+          layer.style.opacity = '0';
+          imageContainer.innerHTML = '';
+
+          document.getElementById('dialogueQuote').textContent = f.dialogue || '';
+          document.getElementById('dialogueContext').textContent = f.context || 'Guess the Movie / Show';
+
+          ph.classList.add('hidden');
+          dialogue.classList.add('visible');
+
+          // Typewriter effect
+          this._typeDialogue(f.dialogue);
+
+          this.preloadUpcoming();
+          return;
+        }
+
+        // Hide dialogue if visible
+        dialogue.classList.remove('visible');
+
+        // Fade out placeholder
+        if (ph) ph.classList.add('hidden');
+
+        // Create and load new image with crossfade
+        const newImg = document.createElement('img');
+        newImg.className = 'frame-image';
+
+        // Start loading
+        try {
+          await this.preloadImage(f.content);
+          newImg.src = f.content;
+          newImg.onload = () => {
+            // Check if still valid
+            if (GS.currentFrameLoader !== f) return;
+
+            newImg.classList.add('loaded');
+
+            // Crossfade: fade out old, fade in new
+            if (this._currentImage) {
+              this._currentImage.style.transition = 'opacity 0.4s ease';
+              this._currentImage.style.opacity = '0';
+              setTimeout(() => {
+                if (this._currentImage && this._currentImage.parentNode) {
+                  this._currentImage.parentNode.removeChild(this._currentImage);
+                }
+              }, 400);
+            }
+
+            imageContainer.appendChild(newImg);
+            this._currentImage = newImg;
+            SoundManager.playFrameIn();
+          };
+
+          newImg.onerror = () => {
+            // Fallback to placeholder
+            layer.innerHTML = `<span class="frame-emoji-big">🎬</span>`;
+            layer.style.opacity = '1';
+          };
+
+        } catch (e) {
+          // Fallback
+          layer.innerHTML = `<span class="frame-emoji-big">🎬</span>`;
+          layer.style.opacity = '1';
+        }
+
+        this.preloadUpcoming();
+      },
+
+      /* Typewriter effect for dialogue */
+      _typeDialogue(text) {
+        const el = document.getElementById('dialogueQuote');
+        el.textContent = '';
+        let i = 0;
+
+        const type = () => {
+          if (!SM.is(GS.PHASES.ROUND_ACTIVE)) return;
+          if (i < text.length) {
+            el.textContent += text[i];
+            i++;
+            if (i % 3 === 0) SoundManager.playDialogueIn();
+            setTimeout(type, Math.random() * 30 + 20);
+          }
+        };
+
+        setTimeout(type, 300);
+      },
+
+      /* Reveal answer with blur */
+      async revealAnswer(f) {
+        const layer = document.getElementById('frameLayer');
+        const imageContainer = document.getElementById('imageContainer');
+        const dialogue = document.getElementById('frameDialogue');
+        const ansOv = document.getElementById('answerOverlay');
+        const ansTitle = document.getElementById('ansTitle');
+        const ansYear = document.getElementById('ansYear');
+        const ansDialogue = document.getElementById('ansDialogue');
+
+        ansTitle.textContent = f.answer || '';
+        ansYear.textContent = f.year ? `${f.year}` : '';
+
+        if (f.type === 'dialogue' && f.dialogue) {
+          ansDialogue.textContent = `"${f.dialogue}"`;
+          ansDialogue.style.display = 'block';
+        } else {
+          ansDialogue.style.display = 'none';
+        }
+
+        // Blur effect
+        if (f.type === 'dialogue') {
+          dialogue.style.filter = 'blur(5px) brightness(0.5)';
+        } else {
+          if (imageContainer.firstChild) {
+            imageContainer.firstChild.style.transition = 'filter 0.5s ease';
+            imageContainer.firstChild.style.filter = 'blur(28px) brightness(.4)';
+          }
+        }
+
+        await new Promise(r => setTimeout(r, 180));
+        ansOv.classList.add('visible');
+        SoundManager.playReveal();
+      },
+
+      /* Cleanup between rounds */
+      cleanup() {
+        const dialogue = document.getElementById('frameDialogue');
+        dialogue.style.filter = '';
+        dialogue.classList.remove('visible');
+      }
+    };
+
+    /* ═══ GAME CONTROLLER ═══ */
+    const GameController = {
+      startGame() {
+        SoundManager.playClick();
+        if (Judges.calcTotal() === 0) { alert('Add at least one section with valid rounds!'); return; }
+        if (!GS.players.length) { alert('Add at least one player!'); return; }
+        SoundManager.playGameStart();
+        GS.players.forEach(p => p.score = 0);
+        GS.currentSection = 0; GS.currentSectionRound = 0;
+        GS.scoring.locked = false; GS.scoring.completed = false; GS.roundSkipped = false;
+        GS.imageCache.clear();
+        Judges.init(); TC.clear(); SM.set(GS.PHASES.IDLE);
+        UI.renderLB(); FrameDisplay.reset(); UI.showScreen('gameScreen'); this.showSectionIntro();
+      },
+      showSectionIntro() {
+        while (GS.currentSection < GS.sections.length) { const s = GS.sections[GS.currentSection]; if (s.frames.filter(f => (f.content && f.answer) || (f.type === 'dialogue' && f.dialogue && f.answer)).length > 0) break; GS.currentSection++; }
+        if (GS.currentSection >= GS.sections.length) { this.endGame(); return; }
+        const sec = GS.sections[GS.currentSection];
+        document.getElementById('sioIcon').textContent = sec.icon;
+        document.getElementById('sioName').textContent = sec.name;
+        document.getElementById('sioRounds').textContent = sec.frames.filter(f => (f.content && f.answer) || (f.type === 'dialogue' && f.dialogue && f.answer)).length;
+        document.getElementById('curSecIcon').textContent = sec.icon;
+        document.getElementById('curSecName').textContent = sec.name;
+        document.getElementById('sioDots').innerHTML = GS.sections.map((_, i) => `<div class="sio-dot ${i < GS.currentSection ? 'c' : ''} ${i === GS.currentSection ? 'a' : ''}"></div>`).join('');
+        SoundManager.playSectionIntro();
+        document.getElementById('secIntroOv').classList.add('on');
+        setTimeout(() => { document.getElementById('secIntroOv').classList.remove('on'); GS.currentSectionRound = 0; this.prepareRound(); }, 3000);
+      },
+      prepareRound() {
+        const sec = GS.sections[GS.currentSection];
+        const valid = sec.frames.filter(f => (f.content && f.answer) || (f.type === 'dialogue' && f.dialogue && f.answer));
+        if (GS.currentSectionRound >= valid.length) { GS.currentSection++; this.showSectionIntro(); return; }
+        Judges.clearFlags();
+        GS.scoring.locked = false; GS.scoring.completed = false; GS.roundSkipped = false;
+        UI.showScoringOv(false); UI.showNonk(false);
+        document.getElementById('skipBtn').disabled = false;
+        Judges.process(() => this.showRoundIntro());
+      },
+      showRoundIntro() {
+        const ov = document.getElementById('roundIntroOv');
+        document.getElementById('rioNum').textContent = GS.currentSectionRound + 1;
+        document.getElementById('rioTag').textContent = taglines[Math.floor(Math.random() * taglines.length)];
+        const dots = ['rd1', 'rd2', 'rd3'].map(id => document.getElementById(id));
+        dots.forEach(d => d.classList.remove('a')); SoundManager.playRoundStart(); ov.classList.add('on');
+        let i = 0; const iv = setInterval(() => { if (i < 3) { dots[i].classList.add('a'); SoundManager.playClick(); i++; } else { clearInterval(iv); setTimeout(() => { ov.classList.remove('on'); this.startRound(); }, 500); } }, 600);
+      },
+      async startRound() {
+        const sec = GS.sections[GS.currentSection];
+        const valid = sec.frames.filter(f => (f.content && f.answer) || (f.type === 'dialogue' && f.dialogue && f.answer));
+        const frame = valid[GS.currentSectionRound];
+        document.getElementById('roundInfo').textContent = `Round ${GS.currentSectionRound + 1} / ${valid.length}`;
+        UI.renderLB(); UI.showNonk(false);
+        FrameDisplay.cleanup();
+        await FrameDisplay.showFrame(frame);
+        SM.set(GS.PHASES.ROUND_ACTIVE);
+        TC.startMain(() => this.onMainDone());
+      },
+      onMainDone() { if (!SM.is(GS.PHASES.ROUND_ACTIVE)) return; document.getElementById('skipBtn').disabled = true; this.startJudgePhase(); },
+      startJudgePhase() { SM.set(GS.PHASES.JUDGE_PHASE); UI.renderLB(); TC.startJudge(() => this.onJudgeDone()); },
+      onJudgeDone() { this.startReveal(); },
+      async startReveal() {
+        SM.set(GS.PHASES.ANSWER_REVEAL);
+        const sec = GS.sections[GS.currentSection];
+        const valid = sec.frames.filter(f => (f.content && f.answer) || (f.type === 'dialogue' && f.dialogue && f.answer));
+        await FrameDisplay.revealAnswer(valid[GS.currentSectionRound]);
+        setTimeout(() => this.startScoring(), GS.settings.answerRevealDuration * 1000);
+      },
+      startScoring() { SM.set(GS.PHASES.SCORING_PHASE); GS.scoring.locked = false; GS.scoring.completed = false; GS.roundSkipped = false; SoundManager.playScoring(); UI.showScoringOv(true); UI.showNonk(true); UI.renderLB(); },
+      scoringClick(idx) {
+        SoundManager.playClick(); if (!SM.is(GS.PHASES.SCORING_PHASE) || GS.scoring.locked) return;
+        GS.scoring.locked = true; UI.showNonk(false); UI.disableScoring(); UI.markSelected(idx); UI.showLocked();
+        const isJ = idx === GS.judge.currentJudgeIndex; const pts = isJ ? GS.settings.judgePoints : GS.settings.pointsPerAnswer;
+        Scores.add(idx, pts); Scores.popup(idx, pts); SoundManager.playSelPlayer(); GS.scoring.completed = true;
+        setTimeout(() => this.endScoring(), 1200);
+      },
+      noOneKnows() {
+        SoundManager.playClick(); if (!SM.is(GS.PHASES.SCORING_PHASE) || GS.scoring.locked) return;
+        GS.scoring.locked = true; GS.roundSkipped = true; SoundManager.playSkip();
+        const btn = document.getElementById('nonkBtn'), msg = document.getElementById('skipMsgEl');
+        if (btn) btn.disabled = true; if (msg) msg.classList.add('on');
+        UI.disableScoring(); UI.showSkipped();
+        setTimeout(() => UI.showNonk(false), 800);
+        setTimeout(() => this.endScoring(), 1500);
+      },
+      endScoring() { UI.showScoringOv(false); UI.showNonk(false); this.roundTransition(); },
+      roundTransition() {
+        SM.set(GS.PHASES.ROUND_TRANSITION); SoundManager.playTransition(); TC.clear();
+        Judges.incRound(); GS.currentSectionRound++;
+        FrameDisplay.reset();
+        const sec = GS.sections[GS.currentSection];
+        const valid = sec.frames.filter(f => (f.content && f.answer) || (f.type === 'dialogue' && f.dialogue && f.answer));
+        if (GS.currentSectionRound >= valid.length) { GS.currentSection++; if (GS.currentSection >= GS.sections.length) { this.endGame(); return; } this.showSectionIntro(); }
+        else this.prepareRound();
+      },
+      skipRound() { SoundManager.playClick(); if (!SM.is(GS.PHASES.ROUND_ACTIVE)) return; SoundManager.playSkip(); TC.clear(); this.onMainDone(); },
+      endGame() {
+        TC.clear(); SM.set(GS.PHASES.WINNER_SCREEN); SoundManager.playWinner(); UI.showScreen('winnerScreen');
+        const sorted = [...GS.players].sort((a, b) => b.score - a.score), winner = sorted[0];
+        if (winner.avatar) { document.getElementById('winnerName').innerHTML = `<div class="w-avatar">${winner.avatar}</div>${winner.name}`; } else { document.getElementById('winnerName').textContent = winner.name; }
+        document.getElementById('winnerScore').textContent = winner.score;
+        document.getElementById('creatorMsg').textContent = GS.settings.creatorMessage;
+        UI.renderFinalLB(); this.confetti();
+      },
+      confetti() {
+        const box = document.getElementById('confettiBox'); box.innerHTML = '';
+        const cols = ['#ff2e92', '#ffd700', '#4ade80', '#60a5fa', '#f472b6', '#a78bfa'];
+        for (let i = 0; i < 100; i++) {
+          const el = document.createElement('div'); el.className = 'confetti';
+          el.style.cssText = `left:${Math.random() * 100}%;background:${cols[Math.floor(Math.random() * cols.length)]};animation-duration:${3 + Math.random() * 3}s;animation-delay:${Math.random() * 2}s;${Math.random() > .5 ? 'border-radius:50%' : ''}`;
+          box.appendChild(el);
+          if (i % 10 === 0) setTimeout(() => SoundManager.playPop(), Math.random() * 1000);
+        }
+      },
+      playAgain() { SoundManager.playClick(); FrameDisplay.reset(); CinematicIntro.play(); },
+      goHome() { SoundManager.playClick(); TC.clear(); SM.set(GS.PHASES.IDLE); FrameDisplay.reset(); UI.showScreen('homeScreen'); }
+    };
+
+
+    /* ═══ ADMIN ═══ */
+    const AdminPanel = {
+      open() { SoundManager.playClick(); document.getElementById('adminModal').classList.add('active'); this.renderSections(); this.renderPlayers(); this.updatePreview(); this.loadCfg(); this.tab('players'); },
+      close() { SoundManager.playClick(); this.saveCfg(); document.getElementById('adminModal').classList.remove('active'); UI.renderLB(); },
+      tab(name) {
+        SoundManager.playClick();
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active')); document.querySelector(`[onclick="AdminPanel.tab('${name}')"]`).classList.add('active'); document.getElementById(`tab-${name}`).classList.add('active');
+        if (name === 'players') this.updatePreview();
+        if (name === 'sounds') this.renderSounds();
+      },
+      loadCfg() {
+        document.getElementById('cfgTimer').value = GS.settings.timerDuration;
+        document.getElementById('cfgJudgeTimer').value = GS.settings.judgePhaseDuration;
+        document.getElementById('cfgReveal').value = GS.settings.answerRevealDuration;
+        document.getElementById('cfgPts').value = GS.settings.pointsPerAnswer;
+        document.getElementById('cfgJPts').value = GS.settings.judgePoints;
+        document.getElementById('cfgMsg').value = GS.settings.creatorMessage;
+        document.getElementById('cfgVol').value = SoundManager.vol * 100;
+      },
+      saveCfg() {
+        GS.settings.timerDuration = parseInt(document.getElementById('cfgTimer').value) || 30;
+        GS.settings.judgePhaseDuration = parseInt(document.getElementById('cfgJudgeTimer').value) || 5;
+        GS.settings.answerRevealDuration = parseInt(document.getElementById('cfgReveal').value) || 2;
+        GS.settings.pointsPerAnswer = parseInt(document.getElementById('cfgPts').value) || 10;
+        GS.settings.judgePoints = parseInt(document.getElementById('cfgJPts').value) || 20;
+        GS.settings.creatorMessage = document.getElementById('cfgMsg').value || 'Thank you!';
+        SoundManager.setVolume(document.getElementById('cfgVol').value / 100);
+      },
+
+      /* ── Sounds tab ── */
+      _soundDefs: [
+        {
+          category: '🖱️ UI', sounds: [
+            { key: 'click', label: 'Button Click', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-select-click-1108.wav', play: () => SoundManager.playClick() },
+            { key: 'hover', label: 'Button Hover', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-interface-option-select-2573.wav', play: () => SoundManager.playHover() },
+            { key: 'skip', label: 'Skip / Error', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.wav', play: () => SoundManager.playSkip() },
+          ]
+        },
+        {
+          category: '⏳ Countdown', sounds: [
+            { key: 'countBeep', label: 'Count Beep (3/2/1)', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-retro-game-notification-212.wav', play: () => SoundManager.playCountBeep(2) },
+            { key: 'fanfare', label: 'GO! Fanfare', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.wav', play: () => SoundManager.playCountBeep(0) },
+          ]
+        },
+        {
+          category: '🎬 Cinematic Intro', sounds: [
+            { key: 'hum', label: 'Ambient Hum', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-cinematic-mystery-333.wav', play: () => SoundManager.playHum() },
+            { key: 'whoosh', label: 'Whoosh', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-fast-small-sweep-transition-166.wav', play: () => SoundManager.playWhoosh() },
+            { key: 'flare', label: 'Flare Burst', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-positive-notification-266.wav', play: () => SoundManager.playFlare() },
+            { key: 'typing', label: 'Typing Effect', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-typewriter-1560.wav', play: () => { SoundManager.playTyping(); SoundManager.playTyping(); SoundManager.playTyping(); } },
+            { key: 'divider', label: 'Divider Expand', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.wav', play: () => SoundManager.playDivider() },
+            { key: 'tagline', label: 'Tagline Appear', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-positive-notification-266.wav', play: () => SoundManager.playTagline() },
+            { key: 'sweepOut', label: 'Sweep Out', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-moving-through-cyberspace-transition-467.wav', play: () => SoundManager.playSweepOut() },
+          ]
+        },
+        {
+          category: '🎮 Game Flow', sounds: [
+            { key: 'gameStart', label: 'Game Start', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-winning-a-coin-video-game-2069.wav', play: () => SoundManager.playGameStart() },
+            { key: 'sectionIntro', label: 'Section Intro', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-complete-or-approved-mission-205.wav', play: () => SoundManager.playSectionIntro() },
+            { key: 'roundStart', label: 'Round Start', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.wav', play: () => SoundManager.playRoundStart() },
+            { key: 'transition', label: 'Round Transition', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-quick-win-video-game-notification-269.wav', play: () => SoundManager.playTransition() },
+          ]
+        },
+        {
+          category: '🖼️ Frame', sounds: [
+            { key: 'frameIn', label: 'Frame Reveal', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-reveal-game-notification-937.wav', play: () => SoundManager.playFrameIn() },
+            { key: 'dialogueIn', label: 'Dialogue Typing', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-bubble-notification-beep-2356.wav', play: () => SoundManager.playDialogueIn() },
+          ]
+        },
+        {
+          category: '⏱️ Timer', sounds: [
+            { key: 'tick', label: 'Timer Tick', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-clock-countdown-bleeps-916.wav', play: () => SoundManager.playTick() },
+            { key: 'tickWarn', label: 'Timer Warning', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-alert-alarm-1005.wav', play: () => SoundManager.playTickWarn() },
+          ]
+        },
+        {
+          category: '🎯 Scoring', sounds: [
+            { key: 'reveal', label: 'Answer Reveal', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-game-bonus-reached-2065.wav', play: () => SoundManager.playReveal() },
+            { key: 'scoring', label: 'Scoring Phase', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-game-treasure-coin-2067.wav', play: () => SoundManager.playScoring() },
+            { key: 'selPlayer', label: 'Player Selected', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-game-level-completed-2059.wav', play: () => SoundManager.playSelPlayer() },
+          ]
+        },
+        {
+          category: '🏆 End', sounds: [
+            { key: 'winner', label: 'Winner Fanfare', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-animated-small-group-applause-523.wav', play: () => SoundManager.playWinner() },
+            { key: 'pop', label: 'Confetti Pop', exampleUrl: 'https://assets.mixkit.co/sfx/preview/mixkit-bubble-pop-up-alert-notification-2357.wav', play: () => SoundManager.playPop() },
+          ]
+        },
+      ],
+      renderSounds() {
+        const container = document.getElementById('soundsTabContent');
+        if (!container) return;
+        let html = '';
+        this._soundDefs.forEach(cat => {
+          html += `<div class="snd-category"><div class="snd-category-title">${cat.category}</div>`;
+          cat.sounds.forEach(snd => {
+            const cfg = SoundManager._sc(snd.key);
+            /* register example URL into soundConfig so _playCustom can see it */
+            cfg._exampleUrl = snd.exampleUrl || '';
+            const urls = cfg.audioUrls || [];
+            const anyUrl = urls.some(u => u && u.trim());
+            const exOn = !!cfg.exampleEnabled;
+            const exUrl = snd.exampleUrl || '';
+            const hasAny = anyUrl || exOn;
+            html += `<div class="snd-row ${cfg.enabled ? '' : 'disabled'}" id="srow-${snd.key}">
+              <label class="snd-toggle">
+                <input type="checkbox" ${cfg.enabled ? 'checked' : ''} onchange="AdminPanel.setSoundEnabled('${snd.key}',this.checked)">
+                <span class="snd-slider-bg"></span>
+              </label>
+              <span class="snd-name">${snd.label}${hasAny ? ' <span style="color:#4ade80;font-size:9px">●</span>' : ''}</span>
+              <div class="snd-range-wrap">
+                <span class="snd-range-lbl">Pitch ${Math.round(cfg.pitch * 100)}%</span>
+                <input type="range" min="0.25" max="3" step="0.05" value="${cfg.pitch}"
+                  oninput="AdminPanel.setSoundPitch('${snd.key}',parseFloat(this.value));this.previousElementSibling.textContent='Pitch '+Math.round(this.value*100)+'%'">
+              </div>
+              <div class="snd-range-wrap">
+                <span class="snd-range-lbl">Speed ${Math.round(cfg.speed * 100)}%</span>
+                <input type="range" min="0.25" max="3" step="0.05" value="${cfg.speed}"
+                  oninput="AdminPanel.setSoundSpeed('${snd.key}',parseFloat(this.value));this.previousElementSibling.textContent='Speed '+Math.round(this.value*100)+'%'">
+              </div>
+              <select class="snd-style-sel" onchange="AdminPanel.setSoundStyle('${snd.key}',this.value)">
+                <option value="default" ${cfg.style === 'default' ? 'selected' : ''}>Default</option>
+                <option value="retro"   ${cfg.style === 'retro' ? 'selected' : ''}>Retro</option>
+                <option value="soft"    ${cfg.style === 'soft' ? 'selected' : ''}>Soft</option>
+                <option value="arcade"  ${cfg.style === 'arcade' ? 'selected' : ''}>Arcade</option>
+              </select>
+              <button class="snd-play-btn" onclick="AdminPanel.previewSound('${snd.key}')" title="Preview">▶</button>
+            </div>
+            <!-- Example + URL list panel -->
+            <div class="snd-url-list" id="sulist-${snd.key}">
+              <!-- Example strip -->
+              <div class="snd-example-row">
+                <label class="snd-toggle" title="${exOn ? 'Example ON' : 'Example OFF'}" style="transform:scale(.85)">
+                  <input type="checkbox" ${exOn ? 'checked' : ''} onchange="AdminPanel.toggleExample('${snd.key}',this.checked)">
+                  <span class="snd-slider-bg"></span>
+                </label>
+                <span class="snd-example-badge">📎 Example</span>
+                <span class="snd-example-url" title="${exUrl}">${exUrl ? exUrl.replace('https://assets.mixkit.co/sfx/preview/', 'mixkit: ') : '—'}</span>
+                <button class="snd-url-test" onclick="AdminPanel.testExampleUrl('${snd.key}')" title="Test example sound">▶</button>
+              </div>
+              <!-- User-added URLs -->
+              <div class="snd-url-list-hdr" style="margin-top:6px">
+                <span class="snd-url-list-lbl">🎵 Custom URLs</span>
+                <span class="snd-url-list-hint">${anyUrl ? 'Random pick on play' : 'Overrides built-in sound'}</span>
+              </div>
+              ${urls.map((u, idx) => `
+              <div class="snd-url-entry" id="sentry-${snd.key}-${idx}">
+                <span class="snd-url-num">${idx + 1}.</span>
+                <input class="snd-url-inp ${u.trim() ? 'has-url' : ''}" id="surl-${snd.key}-${idx}"
+                  type="url" placeholder="https://... (.mp3 / .wav / .ogg)"
+                  value="${u.replace(/"/g, '&quot;')}"
+                  oninput="AdminPanel.setAudioUrlAt('${snd.key}',${idx},this.value,this)">
+                <button class="snd-url-test" onclick="AdminPanel.testAudioUrlAt('${snd.key}',${idx})" title="Test">▶</button>
+                <button class="snd-url-clear" onclick="AdminPanel.removeAudioUrl('${snd.key}',${idx})" title="Remove">×</button>
+              </div>`).join('')}
+              <button class="snd-add-url-btn" onclick="AdminPanel.addAudioUrl('${snd.key}')">➕ Add Link</button>
+            </div>`;
+          });
+          html += '</div>';
+        });
+        container.innerHTML = html;
+      },
+      setSoundEnabled(key, val) {
+        SoundManager._sc(key).enabled = val;
+        const row = document.getElementById('srow-' + key);
+        if (row) row.classList.toggle('disabled', !val);
+      },
+      setSoundPitch(key, val) { SoundManager._sc(key).pitch = val; },
+      setSoundSpeed(key, val) { SoundManager._sc(key).speed = val; },
+      setSoundStyle(key, val) { SoundManager._sc(key).style = val; },
+      toggleExample(key, val) {
+        SoundManager._sc(key).exampleEnabled = val;
+        // update green dot on sound name
+        this.renderSounds();
+      },
+      testExampleUrl(key) {
+        const url = (SoundManager._sc(key)._exampleUrl || '').trim();
+        if (!url) return;
+        SoundManager._stopCurrent();
+        try {
+          const a = new Audio(url);
+          a.volume = SoundManager.vol;
+          SoundManager._currentAudio = a;
+          a.addEventListener('ended', () => { if (SoundManager._currentAudio === a) { a.src = ''; SoundManager._currentAudio = null; } }, { once: true });
+          a.addEventListener('error', () => { if (SoundManager._currentAudio === a) { a.src = ''; SoundManager._currentAudio = null; } }, { once: true });
+          a.play().catch(() => { if (SoundManager._currentAudio === a) { a.src = ''; SoundManager._currentAudio = null; } });
+        } catch (e) { }
+      },
+
+      /* ── Multi-URL helpers ── */
+      _urlsOf(key) {
+        const cfg = SoundManager._sc(key);
+        if (!cfg.audioUrls) cfg.audioUrls = [];
+        return cfg.audioUrls;
+      },
+      addAudioUrl(key) {
+        this._urlsOf(key).push('');
+        this.renderSounds();
+        // auto-focus the new input
+        const list = document.getElementById('sulist-' + key);
+        if (list) { const inputs = list.querySelectorAll('.snd-url-inp'); if (inputs.length) inputs[inputs.length - 1].focus(); }
+      },
+      removeAudioUrl(key, idx) {
+        const arr = this._urlsOf(key);
+        arr.splice(idx, 1);
+        this.renderSounds();
+      },
+      setAudioUrlAt(key, idx, val, inp) {
+        const arr = this._urlsOf(key);
+        arr[idx] = val;
+        if (inp) inp.classList.toggle('has-url', !!val.trim());
+      },
+      testAudioUrlAt(key, idx) {
+        const url = (this._urlsOf(key)[idx] || '').trim();
+        if (!url) { alert('No URL entered at slot ' + (idx + 1) + '.'); return; }
+        try {
+          const a = new Audio(url);
+          a.volume = SoundManager.vol;
+          a.play().catch(e => alert('Could not play: ' + e.message));
+        } catch (e) { alert('Invalid URL.'); }
+      },
+      previewSound(key) {
+        SoundManager.init();
+        const def = this._soundDefs.flatMap(c => c.sounds).find(s => s.key === key);
+        if (def) def.play();
+      },
+      resetAllSounds() {
+        SoundManager.resetSounds();
+        this.renderSounds();
+        SoundManager.playClick();
+      },
+      updatePreview() { const t = Judges.calcTotal(), n = GS.players.length, p = n > 0 ? Math.max(1, Math.floor(t / n)) : 0; document.getElementById('prevTotalRounds').textContent = t; document.getElementById('prevRPJ').textContent = p; },
+      renderSections() {
+        const c = document.getElementById('sectionList');
+        if (!GS.sections.length) { c.innerHTML = '<div style="text-align:center;color:#888;padding:36px;">No sections yet</div>'; return; }
+        c.innerHTML = GS.sections.map((sec, si) => `
+      <div class="section-card ${sec.collapsed ? 'collapsed' : ''}" data-s="${si}">
+        <div class="section-card-header" onclick="AdminPanel.toggleSec(${si})">
+          <select class="section-icon-select" onclick="event.stopPropagation()" onchange="AdminPanel.setSecIcon(${si},this.value)">${sectionIcons.map(ic => `<option value="${ic}" ${sec.icon === ic ? 'selected' : ''}>${ic}</option>`).join('')}</select>
+          <input type="text" value="${sec.name}" placeholder="Section Name" onclick="event.stopPropagation()" onchange="AdminPanel.setSecName(${si},this.value)">
+          <div class="section-meta"><span class="rc">${sec.frames.filter(f => (f.content && f.answer) || (f.type === 'dialogue' && f.dialogue && f.answer)).length} rounds</span><button onclick="event.stopPropagation();AdminPanel.delSec(${si})">🗑️</button></div>
+        </div>
+        <div class="section-content">
+          <div class="frame-list">${sec.frames.map((fr, fi) => `
+            <div class="frame-item">
+              <div class="frame-item-hdr"><span class="fn">Round #${fi + 1}</span><button onclick="AdminPanel.delFrame(${si},${fi})">×</button></div>
+              <div class="frame-item-row"><label>Type:</label><select onchange="AdminPanel.setFrType(${si},${fi},this.value)"><option value="emoji" ${fr.type === 'emoji' ? 'selected' : ''}>🎭 Emoji</option><option value="image" ${fr.type === 'image' ? 'selected' : ''}>🖼️ Image URL</option><option value="dialogue" ${fr.type === 'dialogue' ? 'selected' : ''}>💭 Dialogue</option></select></div>
+              ${fr.type === 'dialogue' ? `
+                <div class="frame-item-row"><label>Dialogue:</label><input type="text" value="${fr.dialogue || ''}" placeholder="Enter the famous dialogue..." onchange="AdminPanel.setFrDialogue(${si},${fi},this.value)"></div>
+                <div class="frame-item-row"><label>Context:</label><input type="text" value="${fr.context || ''}" placeholder="Optional hint/context..." onchange="AdminPanel.setFrContext(${si},${fi},this.value)"></div>
+              `: `
+                <div class="frame-item-row"><label>${fr.type === 'emoji' ? 'Emoji:' : 'URL:'}</label><input type="text" value="${fr.content || ''}" placeholder="${fr.type === 'emoji' ? 'Enter emoji...' : 'Enter image URL...'}" onchange="AdminPanel.setFrContent(${si},${fi},this.value)"></div>
+              `}
+              <div class="frame-item-row"><label>Answer:</label><input type="text" value="${fr.answer || ''}" placeholder="Movie/Show name..." onchange="AdminPanel.setFrAnswer(${si},${fi},this.value)"></div>
+              <div class="frame-item-row"><label>Year:</label><input type="text" value="${fr.year || ''}" placeholder="Year (optional)" onchange="AdminPanel.setFrYear(${si},${fi},this.value)"></div>
+            </div>`).join('')}
+          </div>
+          <button class="add-frame-btn" onclick="AdminPanel.addFrame(${si})">➕ Add Round</button>
+        </div>
+      </div>`).join('');
+        this.updatePreview();
+      },
+      addSection() { SoundManager.playClick(); GS.sections.push({ id: GS.nextSectionId++, name: `Section ${GS.sections.length + 1}`, icon: sectionIcons[Math.floor(Math.random() * sectionIcons.length)], collapsed: false, frames: [] }); this.renderSections(); },
+      delSec(si) { SoundManager.playClick(); if (GS.sections.length <= 1) { alert('Need at least one section!'); return; } if (confirm(`Delete "${GS.sections[si].name}"?`)) { GS.sections.splice(si, 1); this.renderSections(); } },
+      toggleSec(si) { SoundManager.playClick(); GS.sections[si].collapsed = !GS.sections[si].collapsed; this.renderSections(); },
+      setSecName(si, v) { GS.sections[si].name = v; },
+      setSecIcon(si, v) { GS.sections[si].icon = v; },
+      addFrame(si) { SoundManager.playClick(); GS.sections[si].frames.push({ type: 'emoji', content: '🎬', answer: 'New Movie', year: '' }); this.renderSections(); },
+      setFrType(si, fi, v) { GS.sections[si].frames[fi].type = v; if (v === 'dialogue') { delete GS.sections[si].frames[fi].content; GS.sections[si].frames[fi].dialogue = 'Famous dialogue here'; GS.sections[si].frames[fi].context = 'Guess the movie'; } else { delete GS.sections[si].frames[fi].dialogue; delete GS.sections[si].frames[fi].context; GS.sections[si].frames[fi].content = v === 'emoji' ? '🎬' : ''; } this.renderSections(); },
+      setFrContent(si, fi, v) { GS.sections[si].frames[fi].content = v; this.updatePreview(); },
+      setFrDialogue(si, fi, v) { GS.sections[si].frames[fi].dialogue = v; this.updatePreview(); },
+      setFrContext(si, fi, v) { GS.sections[si].frames[fi].context = v; },
+      setFrAnswer(si, fi, v) { GS.sections[si].frames[fi].answer = v; this.updatePreview(); },
+      setFrYear(si, fi, v) { GS.sections[si].frames[fi].year = v; },
+      delFrame(si, fi) { SoundManager.playClick(); GS.sections[si].frames.splice(fi, 1); this.renderSections(); },
+      renderPlayers() {
+        const avatarList = ['🦁', '🐲', '🦊', '🐻', '🦄', '🐧', '🐶', '🐱', '🐵', '🦉', '🦅', '🐺', '🦖', '🐬', '🦍', '🐢', '🦎', '🦜', '🦝', '🦔'];
+        const c = document.getElementById('playerList');
+        c.innerHTML = GS.players.map((p, i) => {
+          const av = p.avatar || '😶';
+          const opts = avatarList.map(a => `<button class="av-opt" onclick="event.stopPropagation();AdminPanel.setAvatar(${i},'${a}')">${a}</button>`).join('');
+          return `<div class="player-item">
+            <div class="av-pick" onclick="AdminPanel.toggleAvPicker(${i})">${av}<div class="av-dropdown" id="avDrop${i}">${opts}</div></div>
+            <input type="text" value="${p.name}" placeholder="Player Name" onchange="AdminPanel.setPlayer(${i},this.value)">
+            <button onclick="AdminPanel.delPlayer(${i})">×</button>
+          </div>`;
+        }).join('');
+      },
+      toggleAvPicker(i) { SoundManager.playClick(); const d = document.getElementById('avDrop' + i); document.querySelectorAll('.av-dropdown').forEach(dd => { if (dd !== d) dd.classList.remove('open'); }); d.classList.toggle('open'); },
+      setAvatar(i, av) { SoundManager.playClick(); GS.players[i].avatar = av; document.querySelectorAll('.av-dropdown').forEach(d => d.classList.remove('open')); this.renderPlayers(); UI.renderLB(); },
+      addPlayer() { SoundManager.playClick(); const avatarList = ['🦁', '🐲', '🦊', '🐻', '🦄', '🐧', '🐶', '🐱', '🐵', '🦉', '🦅', '🐺', '🦖', '🐬', '🦍', '🐢', '🦎', '🦜', '🦝', '🦔']; const usedAv = GS.players.map(p => p.avatar); const freeAv = avatarList.filter(a => !usedAv.includes(a)); GS.players.push({ name: 'Player ' + (GS.players.length + 1), score: 0, avatar: freeAv[0] || avatarList[GS.players.length % avatarList.length] }); this.renderPlayers(); this.updatePreview(); UI.renderLB(); },
+      setPlayer(i, v) { GS.players[i].name = v; UI.renderLB(); },
+      delPlayer(i) { SoundManager.playClick(); if (GS.players.length <= 1) { alert('Need at least one player!'); return; } GS.players.splice(i, 1); this.renderPlayers(); this.updatePreview(); UI.renderLB(); }
+    };
+
+    /* hover sounds */
+    document.addEventListener('mouseover', e => {
+      const sel = 'button,.btn-primary,.btn-secondary,.btn-outline,.admin-tab,.add-frame-btn,.add-section-btn,.add-player-btn,.close-btn,.skip-btn,.spbtn,.nonk-btn,.btn-start,.back-lnk';
+      if (e.target.matches(sel) || e.target.closest(sel)) SoundManager.playHover();
+    });
+
+    /* boot */
+    AdminPanel.renderSections();
+    AdminPanel.renderPlayers();
+    UI.renderLB();
+    AdminPanel.updatePreview();
+    SM.set(GS.PHASES.IDLE);
+
+
+  </script>
+</body>
+
+</html>
