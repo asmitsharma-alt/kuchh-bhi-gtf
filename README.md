@@ -1,6 +1,8 @@
 <div align="center">
   <h1>🎬 KUCHH BHI – Guess The Frame</h1>
   <p><strong>The Ultimate Local Multiplayer Movie Trivia Experience.</strong></p>
+  <p>🌍 <strong><a href="https://kuchh-bhi-podcast.netlify.app/" target="_blank">Play the Game (Live Preview)</a></strong></p>
+  <p>📅 <em>Note: This repository will be updated weekly!</em></p>
 </div>
 
 KUCHH BHI is a browser-based party game designed for film enthusiasts. Built as a single-file application, it brings the excitement of a cinematic game show straight to your living room. Gather your friends, project it on a big screen, and get ready to shout out answers! With high-fidelity animations, a dynamic sound engine, and a unique "Rotating Judge" mechanic, it's the perfect game night companion for movie buffs.
