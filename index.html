@@ -4770,14 +4770,24 @@
       init() {
         const j = GS.judge;
         j.totalRounds = this.calcTotal(); j.totalPlayers = GS.players.length;
-        j.roundsPerJudge = j.totalPlayers > 0 ? Math.max(1, Math.floor(j.totalRounds / j.totalPlayers)) : 1;
+        j.roundsPerJudge = j.totalPlayers > 0 ? Math.max(1, Math.ceil(j.totalRounds / j.totalPlayers)) : 1;
         j.globalRoundIndex = 0; j.currentJudge = null; j.currentJudgeIndex = -1;
         j.currentJudgeRoundsServed = 0; j.usedJudges = []; j.cycleCount = 0;
         this.clearFlags();
       },
       clearFlags() { GS.judge.judgeAnswered = false; GS.judge.judgeRewardGiven = false; },
-      needNew() { const j = GS.judge; if (j.currentJudge === null) return true; if (j.totalPlayers <= 1) return false; return j.currentJudgeRoundsServed >= j.roundsPerJudge; },
-      eligible() { const j = GS.judge; let e = GS.players.filter(p => !j.usedJudges.includes(p.name)); if (!e.length) { j.usedJudges = []; j.cycleCount++; e = [...GS.players]; } return e; },
+      needNew() {
+        const j = GS.judge;
+        if (j.currentJudge === null) return true;
+        if (j.totalPlayers <= 1) return false;
+        if (j.currentJudgeRoundsServed < j.roundsPerJudge) return false;
+
+        // Strict logic check: No player can be a judge twice
+        const e = GS.players.filter(p => !j.usedJudges.includes(p.name));
+        if (e.length === 0) return false; // If no un-used players, keep the current one
+        return true;
+      },
+      eligible() { const j = GS.judge; let e = GS.players.filter(p => !j.usedJudges.includes(p.name)); return e; },
       selectNew() {
         const j = GS.judge;
         if (j.totalPlayers <= 1) { const p = GS.players[0]; j.currentJudge = p ? p.name : null; j.currentJudgeIndex = 0; j.currentJudgeRoundsServed = 0; return p; }
@@ -4796,7 +4806,7 @@
         const j = GS.judge, ov = document.getElementById('judgeOv'), cont = document.getElementById('joCandidates'), sel = document.getElementById('joSelMsg');
         sel.classList.remove('on');
         const sr = document.getElementById('joServeRounds'); if (sr) sr.textContent = j.roundsPerJudge;
-        cont.innerHTML = GS.players.map(p => { const was = j.usedJudges.includes(p.name) && p.name !== j.currentJudge; const av = p.avatar || ''; return `<div class="jo-cand ${was ? 'was' : ''}" data-name="${p.name}"><div class="c-avatar">${av}</div><div class="cname">${p.name}</div><div class="cstat">${was ? 'served' : 'eligible'}</div></div>`; }).join('');
+        cont.innerHTML = GS.players.map(p => { const was = j.usedJudges.includes(p.name); const av = p.avatar || ''; return `<div class="jo-cand ${was ? 'was' : ''}" data-name="${p.name}"><div class="c-avatar">${av}</div><div class="cname">${p.name}</div><div class="cstat">${was ? 'served' : 'eligible'}</div></div>`; }).join('');
         ov.classList.add('on'); SoundManager.playClick();
         const chosen = this.selectNew();
         const cands = cont.querySelectorAll('.jo-cand:not(.was)'), all = cont.querySelectorAll('.jo-cand');
@@ -5383,7 +5393,7 @@
         this.renderSounds();
         SoundManager.playClick();
       },
-      updatePreview() { const t = Judges.calcTotal(), n = GS.players.length, p = n > 0 ? Math.max(1, Math.floor(t / n)) : 0; document.getElementById('prevTotalRounds').textContent = t; document.getElementById('prevRPJ').textContent = p; },
+      updatePreview() { const t = Judges.calcTotal(), n = GS.players.length, p = n > 0 ? Math.max(1, Math.ceil(t / n)) : 0; document.getElementById('prevTotalRounds').textContent = t; document.getElementById('prevRPJ').textContent = p; },
       renderSections() {
         const c = document.getElementById('sectionList');
         if (!GS.sections.length) { c.innerHTML = '<div style="text-align:center;color:#888;padding:36px;">No sections yet</div>'; return; }
