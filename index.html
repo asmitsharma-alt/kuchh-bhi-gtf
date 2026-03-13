@@ -4218,13 +4218,7 @@
   <div class="screen-flash" id="screenFlash"></div>
   <button class="snd-btn" id="sndBtn" onclick="SoundManager.toggleMute()">🔊</button>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    /* ═══ SUPABASE INITIALIZATION ═══ */
-    const SUPABASE_URL = 'https://puijdzrtuehzsfoxfmli.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1aWpkenJ0dWVoenNmb3hmbWxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyNTU0OTAsImV4cCI6MjA4NzgzMTQ5MH0.9Pg6ILLwtZjXZA_M0Hg4LQtDX8i8UrVfWgGOdpkBw_Q';
-    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-
     /* ═══ NAV ═══ */
     function showHowToPlay() {
       SoundManager.playClick();
@@ -4632,55 +4626,53 @@
         {
           id: 1, name: 'Indian Movies', icon: '🎬', collapsed: false, frames: [
             { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Andhaghaaram%20(2020).jpg', answer: 'ANDHAGHAARAM', year: '2020' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Ankhon%20Dekhi%20(2013).jpg', answer: 'AKAASH VANI', year: '2013' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Chatha%20Pacha%20The%20Ring%20of%20Rowdie.png', answer: 'CHATHA PACHA THE RING OF ROWDIE', year: '2026' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/dude%202025.png', answer: 'DUDE', year: '2025' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Joji%20(2021).jpg', answer: 'JOJI', year: '2021' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Lokah%20Chapter%201%20(2025).jpg', answer: 'LOKAH CHAPTER 1', year: '2025' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Masaan%20(2015).jpg', answer: 'MASAAN', year: '2015' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/the%20hero.png', answer: 'THE HERO', year: '1966' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/ROCKETRY%20(2022).png', answer: 'ROCKETRY', year: '2022' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Selfiee%20(2023).jpg', answer: 'SELFIEE', year: '2023' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Talvar%20(2015).jpg', answer: 'TALVAR', year: '2015' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/The%20Lunchbox%20(2013).jpeg', answer: 'THE LUNCHBOX', year: '2013' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Trapped%20(2016).jpg', answer: 'TRAPPED', year: '2016' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Udaan%20(2010).jpg', answer: 'UDAAN', year: '2010' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Viduthalai%20Part%201%20(2023).jpg', answer: 'VIDUTHALAI PART 1', year: '2023' }
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Ankhon%20Dekhi%20(2013).jpg', answer: 'ANKHON DEKHI', year: '2013' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Apur%20Sansar%20(1959).jpg', answer: 'APUR SANSAR', year: '1959' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Bramayugam%20(2024).jpg', answer: 'BRAMAYUGAM', year: '2024' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Dear%20Comrade%20(2019).png', answer: 'DEAR COMRADE', year: '2019' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Dil%20Chahta%20Hai%20(2001).jpg', answer: 'DIL CHAHTA HAI', year: '2001' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Homebound%20(2025).jpg', answer: 'HOMEBOUND', year: '2025' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Jalebi%20(2018).jpg', answer: 'JALEBI', year: '2018' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Jodhaa%20Akbar%20(2008).jpg', answer: 'JODHAA AKBAR', year: '2008' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Laalo%20(2025).png', answer: 'LAALO', year: '2025' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Lootera%20(2013).jpg', answer: 'LOOTERA', year: '2013' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Madaari%20(2016).jpg', answer: 'MADAARI', year: '2016' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Merry%20Christmas%20(2024).jpg', answer: 'MERRY CHRISTMAS', year: '2024' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/Ponman%20(2025).jpg', answer: 'PONMAN', year: '2025' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/indian/The%20Raja%20Saab%20(2026).png', answer: 'THE RAJA SAAB', year: '2026' }
           ]
         },
         {
           id: 2, name: 'International Movies', icon: '🎥', collapsed: false, frames: [
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Burn%20After%20Reading%20(2008).jpg', answer: 'BURN AFTER READING ', year: '2008' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Come%20and%20See%20(1985).png', answer: 'COME AND SEE', year: '1985' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Dallas%20Buyers%20Club%20(2013).png', answer: 'DALLAS BUYERS CLUB ', year: '2013' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/hamnet%20(2026).png', answer: 'HAMNET ', year: '2026' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Into%20the%20Wild%20(2007).jpg', answer: 'INTO THE WILD', year: '2007' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Kingdom%20of%20Heaven%20(2005).jpg', answer: 'KINGDOM OF HEAVEN ', year: '2005' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/predator%20badland%2020025.png', answer: 'PREDATOR: BADLANDS ', year: '2025' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/The%20Godfather%20(1972).jpg', answer: 'THE GODFATHER', year: '1972' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/The%20Good%20the%20Bad%20and%20the%20Ugly%20(1966).png', answer: 'THE GOOD THE BAD THE UGLY', year: '1966' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/The%20Usual%20Suspects%20(1995).png', answer: 'THE USUAL SUSPECTS ', year: '1995' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Unforgiven%20(1992).jpg', answer: 'UNFORGIVEN', year: '1992' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Vanilla%20Sky%20(2001).png', answer: 'VANILLA SKY ', year: '2001' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/watchmen%20%20(2009).png', answer: 'WATCHMEN', year: '2009' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Sentimental%20Value%20(2025).jpg', answer: 'SENTIMENTAL VALUE', year: '2025' },
-            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/CASINO%20ROYALE%20(3).png', answer: 'CASINO ROYALE', year: '2006' }
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Aftersun%20(2022).png', answer: 'AFTERSUN', year: '2022' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Argo%20(2012).png', answer: 'ARGO', year: '2012' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Back%20to%20the%20Future%20(1985).png', answer: 'BACK TO THE FUTURE', year: '1985' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Gifted%20(2017).png', answer: 'GIFTED', year: '2017' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Good%20Luck%2C%20Have%20Fun%2C%20Don_t%20Die%20(2025).png', answer: "GOOD LUCK, HAVE FUN, DON'T DIE", year: '2025' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Lars%20and%20the%20Real%20Girl%20(2007).png', answer: 'LARS AND THE REAL GIRL', year: '2007' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Manchester%20by%20the%20Sea%20(2016).jpg', answer: 'MANCHESTER BY THE SEA', year: '2016' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Once%20Upon%20a%20Time%20in%20the%20West%20(1968).jpg', answer: 'ONCE UPON A TIME IN THE WEST', year: '1968' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/Southpaw%20(2015).png', answer: 'SOUTHPAW', year: '2015' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/The%20Bride%20(2026).png', answer: 'THE BRIDE', year: '2026' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/The%20Moment%20(2026).png', answer: 'THE MOMENT', year: '2026' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/The%20Silence%20of%20the%20Lambs%20(1991).jpg', answer: 'THE SILENCE OF THE LAMBS', year: '1991' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/The%20Terminator%20(1984).png', answer: 'THE TERMINATOR', year: '1984' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/The%20Testament%20of%20Ann%20Lee%20(2025).png', answer: 'THE TESTAMENT OF ANN LEE', year: '2025' },
+            { type: 'image', content: 'https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/GUESSTHEFRAME/international/War%20Machine%20(2026).png', answer: 'WAR MACHINE', year: '2026' }
           ]
         },
         {
           id: 3, name: 'Guess the Dialogue', icon: '💭', collapsed: false, frames: [
-            { type: 'dialogue', dialogue: 'Mogambo khush hua!', answer: 'MR. INDIA', year: '1987', context: 'Famous villain catchphrase' },
-            { type: 'dialogue', dialogue: 'Kitne aadmi the?', answer: 'SHOLAY', year: '1975', context: 'Iconic dacoit question' },
-            { type: 'dialogue', dialogue: 'Rahul, naam toh suna hoga', answer: 'DIL TOH PAGAL HAI', year: '1997', context: 'Classic romance line' },
-            { type: 'dialogue', dialogue: 'Bade bade deshon mein aisi chhoti chhoti baatein hoti rehti hain', answer: 'DDLJ', year: '1995', context: 'Train scene dialogue' },
-            { type: 'dialogue', dialogue: 'Picture abhi baaki hai mere dost', answer: 'OM SHANTI OM', year: '2007', context: 'Supertar comeback line' },
-            { type: 'dialogue', dialogue: 'How\'s the josh?', answer: 'URI', year: '2019', context: 'Army motivational dialogue' },
-            { type: 'dialogue', dialogue: 'I\'ll be back', answer: 'THE TERMINATOR', year: '1984', context: 'Arnold Schwarzenegger classic' },
-            { type: 'dialogue', dialogue: 'May the Force be with you', answer: 'STAR WARS', year: '1977', context: 'Jedi blessing' },
-            { type: 'dialogue', dialogue: 'Why so serious?', answer: 'THE DARK KNIGHT', year: '2008', context: 'Joker\'s infamous line' },
-            { type: 'dialogue', dialogue: 'I see dead people', answer: 'THE SIXTH SENSE', year: '1999', context: 'Spoiler alert scene' },
-            { type: 'dialogue', dialogue: 'Houston, we have a problem', answer: 'APOLLO 13', year: '1995', context: 'Space crisis communication' },
-            { type: 'dialogue', dialogue: 'Life is like a box of chocolates', answer: 'FORREST GUMP', year: '1994', context: 'Bench philosophical moment' }
+            { type: 'dialogue', dialogue: 'Insaan ko sirf do cheez maar sakti hai — bhookh aur darr.', answer: 'GANGS OF WASSEYPUR', year: '2012' },
+            { type: 'dialogue', dialogue: 'Power paida nahi hoti… banayi jaati hai.', answer: 'SARKAR', year: '2005' },
+            { type: 'dialogue', dialogue: 'Zindagi mein teen cheez kabhi underestimate mat karna — I, me, and myself.', answer: 'RACE', year: '2008' },
+            { type: 'dialogue', dialogue: 'Hope is a good thing, maybe the best of things, and no good thing ever dies.', answer: 'THE SHAWSHANK REDEMPTION', year: '1994' },
+            { type: 'dialogue', dialogue: 'The greatest trick the devil ever pulled was convincing the world he didn\'t exist.', answer: 'THE USUAL SUSPECTS', year: '1995' },
+            { type: 'dialogue', dialogue: 'Roads? Where we\'re going, we don\'t need roads.', answer: 'BACK TO THE FUTURE', year: '1985' },
+            { type: 'dialogue', dialogue: 'This is Sparta!', answer: '300', year: '2006' },
+            { type: 'dialogue', dialogue: 'I\'m the king of the world!', answer: 'TITANIC', year: '1997' },
+            { type: 'dialogue', dialogue: 'Ab bhi jiska khoon na khola, khoon nahi woh paani hai.', answer: 'RANG DE BASANTI', year: '2006' },
+            { type: 'dialogue', dialogue: 'Intqaam se sirf intqaam paida hota hai.', answer: 'HAIDER', year: '2014' }
           ]
         }
       ],
@@ -4776,24 +4768,14 @@
       init() {
         const j = GS.judge;
         j.totalRounds = this.calcTotal(); j.totalPlayers = GS.players.length;
-        j.roundsPerJudge = j.totalPlayers > 0 ? Math.max(1, Math.ceil(j.totalRounds / j.totalPlayers)) : 1;
+        j.roundsPerJudge = j.totalPlayers > 0 ? Math.max(1, Math.floor(j.totalRounds / j.totalPlayers)) : 1;
         j.globalRoundIndex = 0; j.currentJudge = null; j.currentJudgeIndex = -1;
         j.currentJudgeRoundsServed = 0; j.usedJudges = []; j.cycleCount = 0;
         this.clearFlags();
       },
       clearFlags() { GS.judge.judgeAnswered = false; GS.judge.judgeRewardGiven = false; },
-      needNew() {
-        const j = GS.judge;
-        if (j.currentJudge === null) return true;
-        if (j.totalPlayers <= 1) return false;
-        if (j.currentJudgeRoundsServed < j.roundsPerJudge) return false;
-
-        // Strict logic check: No player can be a judge twice
-        const e = GS.players.filter(p => !j.usedJudges.includes(p.name));
-        if (e.length === 0) return false; // If no un-used players, keep the current one
-        return true;
-      },
-      eligible() { const j = GS.judge; let e = GS.players.filter(p => !j.usedJudges.includes(p.name)); return e; },
+      needNew() { const j = GS.judge; if (j.currentJudge === null) return true; if (j.totalPlayers <= 1) return false; return j.currentJudgeRoundsServed >= j.roundsPerJudge; },
+      eligible() { const j = GS.judge; let e = GS.players.filter(p => !j.usedJudges.includes(p.name)); if (!e.length) { j.usedJudges = []; j.cycleCount++; e = [...GS.players]; } return e; },
       selectNew() {
         const j = GS.judge;
         if (j.totalPlayers <= 1) { const p = GS.players[0]; j.currentJudge = p ? p.name : null; j.currentJudgeIndex = 0; j.currentJudgeRoundsServed = 0; return p; }
@@ -4812,7 +4794,7 @@
         const j = GS.judge, ov = document.getElementById('judgeOv'), cont = document.getElementById('joCandidates'), sel = document.getElementById('joSelMsg');
         sel.classList.remove('on');
         const sr = document.getElementById('joServeRounds'); if (sr) sr.textContent = j.roundsPerJudge;
-        cont.innerHTML = GS.players.map(p => { const was = j.usedJudges.includes(p.name); const av = p.avatar || ''; return `<div class="jo-cand ${was ? 'was' : ''}" data-name="${p.name}"><div class="c-avatar">${av}</div><div class="cname">${p.name}</div><div class="cstat">${was ? 'served' : 'eligible'}</div></div>`; }).join('');
+        cont.innerHTML = GS.players.map(p => { const was = j.usedJudges.includes(p.name) && p.name !== j.currentJudge; const av = p.avatar || ''; return `<div class="jo-cand ${was ? 'was' : ''}" data-name="${p.name}"><div class="c-avatar">${av}</div><div class="cname">${p.name}</div><div class="cstat">${was ? 'served' : 'eligible'}</div></div>`; }).join('');
         ov.classList.add('on'); SoundManager.playClick();
         const chosen = this.selectNew();
         const cands = cont.querySelectorAll('.jo-cand:not(.was)'), all = cont.querySelectorAll('.jo-cand');
@@ -5145,28 +5127,13 @@
         else this.prepareRound();
       },
       skipRound() { SoundManager.playClick(); if (!SM.is(GS.PHASES.ROUND_ACTIVE)) return; SoundManager.playSkip(); TC.clear(); this.onMainDone(); },
-      async endGame() {
+      endGame() {
         TC.clear(); SM.set(GS.PHASES.WINNER_SCREEN); SoundManager.playWinner(); UI.showScreen('winnerScreen');
         const sorted = [...GS.players].sort((a, b) => b.score - a.score), winner = sorted[0];
         if (winner.avatar) { document.getElementById('winnerName').innerHTML = `<div class="w-avatar">${winner.avatar}</div>${winner.name}`; } else { document.getElementById('winnerName').textContent = winner.name; }
         document.getElementById('winnerScore').textContent = winner.score;
         document.getElementById('creatorMsg').textContent = GS.settings.creatorMessage;
         UI.renderFinalLB(); this.confetti();
-
-        // Save scores to Supabase leaderboard
-        if (supabaseClient) {
-          try {
-            const scoresToInsert = GS.players.map(p => ({
-              player_name: p.name,
-              score: p.score
-            }));
-            const { error } = await supabaseClient.from('leaderboard').insert(scoresToInsert);
-            if (error) console.error('Error saving to leaderboard:', error);
-            else console.log('Successfully saved scores to Supabase!');
-          } catch (err) {
-            console.error('Failed to save to Supabase:', err);
-          }
-        }
       },
       confetti() {
         const box = document.getElementById('confettiBox'); box.innerHTML = '';
@@ -5186,27 +5153,7 @@
     /* ═══ ADMIN ═══ */
     const AdminPanel = {
       open() { SoundManager.playClick(); document.getElementById('adminModal').classList.add('active'); this.renderSections(); this.renderPlayers(); this.updatePreview(); this.loadCfg(); this.tab('players'); },
-      async close() {
-        SoundManager.playClick();
-        this.saveCfg();
-        document.getElementById('adminModal').classList.remove('active');
-        UI.renderLB();
-
-        // Save to Supabase
-        if (supabaseClient) {
-          try {
-            const { error } = await supabaseClient.from('game_state').upsert({
-              id: 1,
-              sections: GS.sections,
-              settings: GS.settings
-            });
-            if (error) console.error('Error saving game state:', error);
-            else console.log('Game state saved to DB');
-          } catch (err) {
-            console.error('Failed to save game state', err);
-          }
-        }
-      },
+      close() { SoundManager.playClick(); this.saveCfg(); document.getElementById('adminModal').classList.remove('active'); UI.renderLB(); },
       tab(name) {
         SoundManager.playClick();
         document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active')); document.querySelector(`[onclick="AdminPanel.tab('${name}')"]`).classList.add('active'); document.getElementById(`tab-${name}`).classList.add('active');
@@ -5434,7 +5381,7 @@
         this.renderSounds();
         SoundManager.playClick();
       },
-      updatePreview() { const t = Judges.calcTotal(), n = GS.players.length, p = n > 0 ? Math.max(1, Math.ceil(t / n)) : 0; document.getElementById('prevTotalRounds').textContent = t; document.getElementById('prevRPJ').textContent = p; },
+      updatePreview() { const t = Judges.calcTotal(), n = GS.players.length, p = n > 0 ? Math.max(1, Math.floor(t / n)) : 0; document.getElementById('prevTotalRounds').textContent = t; document.getElementById('prevRPJ').textContent = p; },
       renderSections() {
         const c = document.getElementById('sectionList');
         if (!GS.sections.length) { c.innerHTML = '<div style="text-align:center;color:#888;padding:36px;">No sections yet</div>'; return; }
@@ -5505,27 +5452,11 @@
     });
 
     /* boot */
-    async function initGame() {
-      if (supabaseClient) {
-        try {
-          const { data, error } = await supabaseClient.from('game_state').select('*').eq('id', 1).single();
-          if (!error && data) {
-            if (data.sections && data.sections.length > 0) GS.sections = data.sections;
-            if (data.settings && Object.keys(data.settings).length > 0) {
-              GS.settings = { ...GS.settings, ...data.settings };
-            }
-          }
-        } catch (err) {
-          console.error('Failed to load game state', err);
-        }
-      }
-      AdminPanel.renderSections();
-      AdminPanel.renderPlayers();
-      UI.renderLB();
-      AdminPanel.updatePreview();
-      SM.set(GS.PHASES.IDLE);
-    }
-    initGame();
+    AdminPanel.renderSections();
+    AdminPanel.renderPlayers();
+    UI.renderLB();
+    AdminPanel.updatePreview();
+    SM.set(GS.PHASES.IDLE);
 
 
   </script>
