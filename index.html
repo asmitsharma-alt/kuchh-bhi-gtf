@@ -2887,6 +2887,33 @@
       padding: 28px;
       text-align: center;
       overflow-y: auto;
+      position: relative;
+    }
+
+    .winner-right-image {
+      position: absolute;
+      right: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      max-width: 525px;
+      width: 37.5vw;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.2);
+      border: 1px solid var(--glass-border);
+      pointer-events: none;
+      z-index: 10;
+      animation: winnerImgFloat 4s ease-in-out infinite;
+    }
+
+    @keyframes winnerImgFloat {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(calc(-50% - 10px)) scale(1.02); }
+    }
+
+    @media (max-width: 900px) {
+      .winner-right-image {
+        display: none;
+      }
     }
 
     .w-trophy {
@@ -4078,6 +4105,7 @@
     <!-- WINNER -->
     <div id="winnerScreen" class="screen">
       <div class="confetti-box" id="confettiBox"></div>
+      <video id="winnerVideo" src="https://nvyrfynwuislkcaweejy.supabase.co/storage/v1/object/public/frames/KuchhBhi.mp4" class="winner-right-image"></video>
       <div class="w-trophy">🏆</div>
       <div class="w-name" id="winnerName">WINNER</div>
       <div class="w-score">Score: <span class="sv" id="winnerScore">0</span> points</div>
@@ -5134,6 +5162,8 @@
         document.getElementById('winnerScore').textContent = winner.score;
         document.getElementById('creatorMsg').textContent = GS.settings.creatorMessage;
         UI.renderFinalLB(); this.confetti();
+        const winVid = document.getElementById('winnerVideo');
+        if (winVid) { winVid.currentTime = 0; winVid.play().catch(e => console.log('Video autoplay prevented', e)); }
       },
       confetti() {
         const box = document.getElementById('confettiBox'); box.innerHTML = '';
@@ -5145,8 +5175,14 @@
           if (i % 10 === 0) setTimeout(() => SoundManager.playPop(), Math.random() * 1000);
         }
       },
-      playAgain() { SoundManager.playClick(); FrameDisplay.reset(); CinematicIntro.play(); },
-      goHome() { SoundManager.playClick(); TC.clear(); SM.set(GS.PHASES.IDLE); FrameDisplay.reset(); UI.showScreen('homeScreen'); }
+      playAgain() {
+        const winVid = document.getElementById('winnerVideo'); if (winVid) winVid.pause();
+        SoundManager.playClick(); FrameDisplay.reset(); CinematicIntro.play(); 
+      },
+      goHome() {
+        const winVid = document.getElementById('winnerVideo'); if (winVid) winVid.pause();
+        SoundManager.playClick(); TC.clear(); SM.set(GS.PHASES.IDLE); FrameDisplay.reset(); UI.showScreen('homeScreen'); 
+      }
     };
 
 
